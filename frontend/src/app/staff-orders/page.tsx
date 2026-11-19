@@ -10,7 +10,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DataUpdatedToast,
   MutatingOverlay,
@@ -52,6 +52,19 @@ export default function StaffOrderHistoryPage() {
   const { orders, isLoading, isValidating } = useStaffOrdersData();
   const { showOverlay, showToast, isSyncing } = useSmartOverlay(orders, isValidating, isLoading);
 
+  // Tạo map mã đơn số đi từ 1 và tăng dần theo thứ tự tạo đơn
+  // Khi xóa hoặc cập nhật đơn hàng, mã đơn tự động dồn liên tục
+  const orderCodeMap = useMemo(() => {
+    const sorted = [...orders].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+    const map = new Map<number, number>();
+    sorted.forEach((o, idx) => {
+      map.set(o.id, idx + 1);
+    });
+    return map;
+  }, [orders]);
+
   // Lọc & tìm kiếm
   const filteredOrders = orders
     .filter((o) => {
@@ -60,8 +73,14 @@ export default function StaffOrderHistoryPage() {
         const q = search.toLowerCase();
         const tableName = o.cafeTable?.name?.toLowerCase() || "";
         const staffName = o.account?.username?.toLowerCase() || "";
-        const orderId = `#${o.id}`;
-        return tableName.includes(q) || staffName.includes(q) || orderId.includes(q);
+        const orderNum = orderCodeMap.get(o.id)?.toString() || "";
+        const orderId = `#${orderNum}`;
+        return (
+          tableName.includes(q) ||
+          staffName.includes(q) ||
+          orderNum.includes(q) ||
+          orderId.includes(q)
+        );
       }
       return true;
     })
@@ -172,9 +191,9 @@ export default function StaffOrderHistoryPage() {
                     className="border-b border-slate-100 hover:bg-amber-50/40 transition-colors"
                   >
                     <td className="p-4">
-                      <span className="flex items-center gap-1.5 text-slate-500 font-mono text-sm">
+                      <span className="flex items-center gap-1.5 text-slate-700 font-mono text-sm font-semibold">
                         <Hash size={14} className="text-amber-500" />
-                        {order.id}
+                        {orderCodeMap.get(order.id) ?? order.id}
                       </span>
                     </td>
                     <td className="p-4">
@@ -240,7 +259,9 @@ export default function StaffOrderHistoryPage() {
                   <ClipboardList size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800">Đơn hàng #{selectedOrder.id}</h3>
+                  <h3 className="text-xl font-bold text-slate-800">
+                    Đơn hàng #{orderCodeMap.get(selectedOrder.id) ?? selectedOrder.id}
+                  </h3>
                   <p className="text-sm text-slate-500">{formatDate(selectedOrder.createdAt)}</p>
                 </div>
               </div>

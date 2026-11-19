@@ -1,6 +1,6 @@
 "use client";
 import { Edit2, Plus, Search, Trash2, Users, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { DataUpdatedToast, MutatingOverlay, useSmartOverlay } from "@/components/ui/LoadingOverlay";
 import { useAccountsData } from "@/hooks/useAccountsData";
@@ -94,9 +94,20 @@ export default function AccountsPage() {
     setIsModalOpen(true);
   };
 
-  const filteredAccounts = accounts.filter((a) =>
-    a.username.toLowerCase().includes(search.toLowerCase()),
-  );
+  // Tạo map STT hiển thị liên tục (1, 2, 3...) theo thứ tự danh sách tài khoản hiện có
+  // Khi xóa 1 tài khoản, accounts cập nhật lại và STT tự động dồn liên tục
+  const accountIndexMap = useMemo(() => {
+    const map = new Map<number, number>();
+    accounts.forEach((a, idx) => {
+      map.set(a.id, idx + 1);
+    });
+    return map;
+  }, [accounts]);
+
+  const filteredAccounts = accounts.filter((a) => {
+    const stt = accountIndexMap.get(a.id)?.toString() || "";
+    return a.username.toLowerCase().includes(search.toLowerCase()) || stt.includes(search);
+  });
 
   return (
     <div className="space-y-6">
@@ -145,7 +156,7 @@ export default function AccountsPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-sm text-slate-500">
-                <th className="p-4 font-medium w-16">ID</th>
+                <th className="p-4 font-medium w-16">STT</th>
                 <th className="p-4 font-medium">Tên đăng nhập</th>
                 <th className="p-4 font-medium">Phân quyền (Role)</th>
                 <th className="p-4 font-medium">Hành động</th>
@@ -157,7 +168,7 @@ export default function AccountsPage() {
                   key={a.id}
                   className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
                 >
-                  <td className="p-4 text-slate-500">#{a.id}</td>
+                  <td className="p-4 text-slate-500">#{accountIndexMap.get(a.id)}</td>
                   <td className="p-4 font-bold text-slate-700 flex items-center gap-2">
                     <Users
                       size={16}
