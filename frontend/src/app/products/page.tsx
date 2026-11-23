@@ -1,5 +1,6 @@
 "use client";
 import { Edit2, Plus, Search, Trash2, X } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { DataUpdatedToast, MutatingOverlay, useSmartOverlay } from "@/components/ui/LoadingOverlay";
@@ -143,6 +144,7 @@ export default function ProductsPage() {
           />
         </div>
         <button
+          type="button"
           onClick={() => openModal()}
           className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
         >
@@ -177,14 +179,16 @@ export default function ProductsPage() {
                 >
                   <td className="p-4">
                     {p.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={
                           p.imageUrl?.startsWith("http")
                             ? p.imageUrl
                             : `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"}/uploads/${p.imageUrl}`
                         }
                         alt={p.name}
+                        width={200}
+                        height={200}
+                        unoptimized
                         className="w-12 h-12 rounded-lg object-cover"
                       />
                     ) : (
@@ -201,12 +205,14 @@ export default function ProductsPage() {
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <button
+                        type="button"
                         onClick={() => openModal(p)}
                         className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
                       >
                         <Edit2 size={18} />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDeleteClick(p)}
                         className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
                       >
@@ -236,6 +242,7 @@ export default function ProductsPage() {
                 {editingId ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate-400 hover:bg-slate-100 p-2 rounded-lg"
               >

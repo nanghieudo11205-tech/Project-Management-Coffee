@@ -42,14 +42,25 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(OrderRequest request) {
-        CafeTable table = cafeTableRepository.findById(request.getTableId()).orElseThrow();
-        table.setStatus("OCCUPIED");
-        cafeTableRepository.save(table);
-
         Order order = new Order();
-        order.setCafeTable(table);
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus("PENDING");
+
+        if (request.getTableId() != null) {
+            CafeTable table = cafeTableRepository.findById(request.getTableId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy bàn"));
+            table.setStatus("OCCUPIED");
+            cafeTableRepository.save(table);
+            order.setCafeTable(table);
+            order.setOrderType(request.getOrderType() != null ? request.getOrderType() : "DINE_IN");
+        } else {
+            order.setCafeTable(null);
+            order.setOrderType("TAKEAWAY");
+        }
+
+        if (request.getPaymentMethod() != null) {
+            order.setPaymentMethod(request.getPaymentMethod());
+        }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getName() != null && !auth.getName().equals("anonymousUser")) {
@@ -67,6 +78,7 @@ public class OrderService {
             detail.setProduct(product);
             detail.setQuantity(detailReq.getQuantity());
             detail.setPrice(product.getPrice());
+            detail.setNote(detailReq.getNote());
             orderDetailRepository.save(detail);
             totalAmount += product.getPrice() * detailReq.getQuantity();
         }
@@ -76,14 +88,49 @@ public class OrderService {
     }
 
     @Transactional
-    public Order checkout(Integer orderId) {
+    public Order checkout(Integer orderId, String paymentMethod) {
         Order order = orderRepository.findById(orderId).orElseThrow();
         order.setStatus("PAID");
 
-        CafeTable table = order.getCafeTable();
-        table.setStatus("AVAILABLE");
-        cafeTableRepository.save(table);
+        if (paymentMethod != null && !paymentMethod.isBlank()) {
+            order.setPaymentMethod(paymentMethod);
+        }
 
+        CafeTable table = order.getCafeTable();
+        if (table != null) {
+            table.setStatus("AVAILABLE");
+            cafeTableRepository.save(table);
+        }
+
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order switchTable(Integer currentTableId, Integer targetTableId) {
+        CafeTable currentTable = cafeTableRepository.findById(currentTableId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bàn hiện tại"));
+        CafeTable targetTable = cafeTableRepository.findById(targetTableId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bàn muốn chuyển tới"));
+
+        if (!"AVAILABLE".equalsIgnoreCase(targetTable.getStatus())) {
+            throw new RuntimeException("Bàn đích đang có khách, không thể chuyển tới");
+        }
+
+        // Tìm đơn hàng đang phục vụ tại bàn hiện tại
+        Order order = orderRepository.findAll().stream()
+                .filter(o -> o.getCafeTable() != null 
+                        && o.getCafeTable().getId().equals(currentTableId) 
+                        && "PENDING".equalsIgnoreCase(o.getStatus()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Bàn hiện tại không có đơn hàng đang phục vụ"));
+
+        currentTable.setStatus("AVAILABLE");
+        cafeTableRepository.save(currentTable);
+
+        targetTable.setStatus("OCCUPIED");
+        cafeTableRepository.save(targetTable);
+
+        order.setCafeTable(targetTable);
         return orderRepository.save(order);
     }
 
@@ -122,6 +169,14 @@ public class OrderService {
         // 1. CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (Nếu có thay đổi)
         if (request.getStatus() != null) {
             order.setStatus(request.getStatus());
+        }
+
+        if (request.getOrderType() != null) {
+            order.setOrderType(request.getOrderType());
+        }
+
+        if (request.getPaymentMethod() != null) {
+            order.setPaymentMethod(request.getPaymentMethod());
         }
 
         // Kiểm tra xem có sự thay đổi bàn hay không
@@ -179,6 +234,7 @@ public class OrderService {
                 detail.setProduct(product);
                 detail.setQuantity(detailReq.getQuantity());
                 detail.setPrice(product.getPrice());
+                detail.setNote(detailReq.getNote());
                 order.getOrderDetails().add(detail);
                 totalAmount += product.getPrice() * detailReq.getQuantity();
             }

@@ -33,4 +33,10 @@ public class Order {
     
     @Column(length = 20)
     private String status = "PENDING";
+
+    @Column(name = "order_type", length = 20)
+    private String orderType = "DINE_IN";
+
+    @Column(name = "payment_method", length = 20)
+    private String paymentMethod = "CASH";
 }

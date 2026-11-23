@@ -6,5 +6,7 @@ import java.util.List;
 public class OrderUpdateRequest {
     private Integer tableId;
     private String status;
+    private String orderType;
+    private String paymentMethod;
     private List<OrderDetailRequest> details;
 }

@@ -6,6 +6,7 @@ import {
   DollarSign,
   Eye,
   Hash,
+  Printer,
   Save,
   Search,
   Trash2,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { type InvoiceData, InvoiceModal } from "@/components/ui/InvoiceModal";
 import {
   DataUpdatedToast,
   MutatingOverlay,
@@ -53,6 +55,27 @@ export default function OrderHistoryPage() {
   const [editStatus, setEditStatus] = useState("");
   const [editTableId, setEditTableId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+
+  const handleOpenInvoice = (order: OrderItem) => {
+    setInvoiceData({
+      orderId: orderCodeMap.get(order.id) ?? order.id,
+      tableName: order.cafeTable?.name || "Mang về",
+      orderType: order.orderType || (order.cafeTable ? "DINE_IN" : "TAKEAWAY"),
+      cashierName: order.account?.username,
+      createdAt: order.createdAt,
+      items: (order.orderDetails || []).map((d) => ({
+        name: d.product?.name || "Món",
+        quantity: d.quantity,
+        price: d.price,
+        note: d.note,
+      })),
+      totalAmount: order.totalAmount,
+      paymentMethod: order.paymentMethod || "CASH",
+    });
+    setIsInvoiceOpen(true);
+  };
 
   // Custom ConfirmModal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -227,6 +250,7 @@ export default function OrderHistoryPage() {
           ].map((f) => (
             <button
               key={f.key}
+              type="button"
               onClick={() => setFilterStatus(f.key)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${filterStatus === f.key ? "bg-amber-500 text-slate-900 shadow-md shadow-amber-500/20" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"}`}
             >
@@ -301,6 +325,7 @@ export default function OrderHistoryPage() {
                     <td className="p-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
+                          type="button"
                           onClick={() => openModal(order)}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
                           title="Xem / Sửa"
@@ -308,6 +333,7 @@ export default function OrderHistoryPage() {
                           <Eye size={15} /> Xem
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleDeleteClick(order.id)}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                           title="Xóa"
@@ -352,6 +378,7 @@ export default function OrderHistoryPage() {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate-400 hover:bg-slate-100 p-2 rounded-lg transition-colors"
               >
@@ -441,26 +468,44 @@ export default function OrderHistoryPage() {
                 </span>
               </div>
             </div>
-            <div className="p-6 border-t border-slate-100 flex items-center justify-end gap-3 bg-slate-50">
+            <div className="p-6 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50">
               <button
                 type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="px-5 py-2.5 text-slate-600 hover:bg-slate-200 rounded-xl font-medium transition-colors"
+                onClick={() => handleOpenInvoice(selectedOrder)}
+                className="px-4 py-2.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
               >
-                Đóng
+                <Printer size={18} className="text-amber-600" />
+                In hóa đơn
               </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-slate-900 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-lg shadow-amber-500/20"
-              >
-                <Save size={18} />
-                {saving ? "Đang lưu..." : "Lưu thay đổi"}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-5 py-2.5 text-slate-600 hover:bg-slate-200 rounded-xl font-medium transition-colors"
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-slate-900 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-lg shadow-amber-500/20"
+                >
+                  <Save size={18} />
+                  {saving ? "Đang lưu..." : "Lưu thay đổi"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Modal In Hóa Đơn */}
+      <InvoiceModal
+        isOpen={isInvoiceOpen}
+        onClose={() => setIsInvoiceOpen(false)}
+        invoice={invoiceData}
+      />
     </div>
   );
 }

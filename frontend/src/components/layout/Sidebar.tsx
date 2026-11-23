@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   LogOut,
   MessageSquareText,
+  ShieldCheck,
   Users,
   UtensilsCrossed,
 } from "lucide-react";
@@ -84,9 +85,16 @@ export default function Sidebar() {
       prefetchKeys: ["/orders", "/tables"],
     },
     {
-      name: "Quản lý nhân viên",
-      href: "/accounts",
+      name: "Hồ sơ nhân viên",
+      href: "/employees",
       icon: Users,
+      roles: ["ADMIN"],
+      prefetchKeys: ["/employees", "/accounts"],
+    },
+    {
+      name: "Tài khoản",
+      href: "/accounts",
+      icon: ShieldCheck,
       roles: ["ADMIN"],
       prefetchKeys: ["/accounts"],
     },
@@ -135,6 +143,7 @@ export default function Sidebar() {
 
       <div className="p-4 border-t border-slate-800">
         <button
+          type="button"
           onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-400 hover:bg-red-500/10 rounded-xl transition-colors font-medium"
         >
