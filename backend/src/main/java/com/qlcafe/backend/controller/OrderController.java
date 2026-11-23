@@ -31,8 +31,18 @@ public class OrderController {
 
     @PutMapping("/{id}/checkout")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
-    public ResponseEntity<?> checkout(@PathVariable Integer id) {
-        return ResponseEntity.ok(orderService.checkout(id));
+    public ResponseEntity<?> checkout(
+            @PathVariable Integer id,
+            @RequestParam(required = false, defaultValue = "CASH") String paymentMethod) {
+        return ResponseEntity.ok(orderService.checkout(id, paymentMethod));
+    }
+
+    @PutMapping("/switch-table")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    public ResponseEntity<?> switchTable(
+            @RequestParam Integer currentTableId,
+            @RequestParam Integer targetTableId) {
+        return ResponseEntity.ok(orderService.switchTable(currentTableId, targetTableId));
     }
 
     @GetMapping

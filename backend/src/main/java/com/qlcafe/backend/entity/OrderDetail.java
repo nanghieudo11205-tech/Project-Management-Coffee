@@ -23,4 +23,7 @@ public class OrderDetail {
     
     @Column(nullable = false)
     private Double price;
+
+    @Column(length = 255)
+    private String note;
 }

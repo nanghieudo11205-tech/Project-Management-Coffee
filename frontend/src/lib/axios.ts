@@ -24,10 +24,10 @@ axiosInstance.interceptors.request.use(
       "[Axios] Sending request to",
       config.url,
       "with token:",
-      token ? token.substring(0, 10) + "..." : "none",
+      token ? `${token.substring(0, 10)}...` : "none",
     );
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

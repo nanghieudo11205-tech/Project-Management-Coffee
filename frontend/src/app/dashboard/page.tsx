@@ -196,6 +196,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-slate-800">Biểu đồ Doanh thu & Đơn hàng</h3>
               <button
+                type="button"
                 onClick={() => setRevenueModalOpen(true)}
                 className="text-sm text-amber-500 font-medium hover:text-amber-600 flex items-center gap-1 cursor-pointer"
               >
@@ -326,7 +327,7 @@ function StatCard({ title, value, icon: Icon, color, bg, href, onClick }: StatCa
 
   if (onClick) {
     return (
-      <button onClick={onClick} className={finalClasses + " text-left"}>
+      <button type="button" onClick={onClick} className={`${finalClasses} text-left`}>
         {innerContent}
       </button>
     );

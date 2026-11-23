@@ -73,7 +73,7 @@ export default function AIAssistantPage() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, []);
 
   useEffect(() => {
     const fetchContext = async () => {
@@ -218,6 +218,7 @@ export default function AIAssistantPage() {
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
           <button
+            type="button"
             onClick={handleSend}
             disabled={!input.trim() || loading}
             className="absolute right-2 p-2 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:text-slate-500 text-slate-900 rounded-lg transition-colors shadow-sm disabled:shadow-none"

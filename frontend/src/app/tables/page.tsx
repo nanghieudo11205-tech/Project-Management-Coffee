@@ -2,6 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import {
+  ArrowRightLeft,
   CheckCircle,
   Coffee,
   MoreVertical,
@@ -12,8 +13,11 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CheckoutModal } from "@/components/ui/CheckoutModal";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { type InvoiceData, InvoiceModal } from "@/components/ui/InvoiceModal";
 import { DataUpdatedToast, MutatingOverlay, useSmartOverlay } from "@/components/ui/LoadingOverlay";
+import { SwitchTableModal } from "@/components/ui/SwitchTableModal";
 import { useTablesData } from "@/hooks/useTablesData";
 import axiosInstance from "@/lib/axios";
 
@@ -59,6 +63,37 @@ export default function TablesPage() {
     message: "",
   });
 
+  // Modal Thanh toán (Tiền mặt / Chuyển khoản)
+  const [checkoutModal, setCheckoutModal] = useState<{
+    isOpen: boolean;
+    orderId: number;
+    tableName: string;
+    totalAmount: number;
+  }>({
+    isOpen: false,
+    orderId: 0,
+    tableName: "",
+    totalAmount: 0,
+  });
+
+  // Modal In Hóa Đơn
+  const [invoiceModal, setInvoiceModal] = useState<{
+    isOpen: boolean;
+    invoice: InvoiceData | null;
+  }>({
+    isOpen: false,
+    invoice: null,
+  });
+
+  // Modal Chuyển Bàn Nhanh
+  const [switchTableModal, setSwitchTableModal] = useState<{
+    isOpen: boolean;
+    currentTable: { id: number; name: string; status: string } | null;
+  }>({
+    isOpen: false,
+    currentTable: null,
+  });
+
   // Toast message
   const [toastMessage, setToastMessage] = useState("Cập nhật dữ liệu thành công ✓");
 
@@ -99,50 +134,85 @@ export default function TablesPage() {
   };
 
   const handleCheckout = (tableId: number) => {
-    const order = orders.find((o) => o.cafeTable.id === tableId);
+    const order = orders.find((o) => o.cafeTable?.id === tableId);
     if (!order) return alert("Không tìm thấy đơn hàng cho bàn này");
 
-    setConfirmModal({
+    setCheckoutModal({
       isOpen: true,
-      title: "Xác nhận thanh toán",
-      message: (
-        <div className="space-y-2 mt-1">
-          <p className="text-slate-600">
-            Xác nhận thanh toán cho bàn{" "}
-            <span className="font-bold text-slate-800">{order.cafeTable.name}</span>?
-          </p>
-          <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100/60 mt-2">
-            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-              Tổng tiền cần thanh toán
-            </p>
-            <p className="text-2xl font-black text-emerald-600 tracking-wide mt-1">
-              {order.totalAmount.toLocaleString("vi-VN")} đ
-            </p>
-          </div>
-        </div>
-      ),
-      type: "success",
-      confirmText: "Thanh toán",
-      onConfirm: async () => {
-        try {
-          startMutation();
-          await axiosInstance.put(`/orders/${order.id}/checkout`);
-          await mutate();
-          endMutation(true); // Skip regular toast
-          setCheckoutSuccessModal({
-            isOpen: true,
-            message: `Thanh toán thành công cho bàn ${order.cafeTable.name}!`,
-          });
-        } catch (err) {
-          console.error(err);
-          endMutation();
-          alert("Có lỗi xảy ra");
-        }
-      },
+      orderId: order.id,
+      tableName: order.cafeTable?.name || "",
+      totalAmount: order.totalAmount,
     });
   };
 
-  const handleOpenEditModal = (table: any) => {
+  const handleConfirmCheckout = async (
+    paymentMethod: "CASH" | "BANKING",
+    customerPaid?: number,
+    change?: number,
+  ) => {
+    try {
+      startMutation();
+      await axiosInstance.put(
+        `/orders/${checkoutModal.orderId}/checkout?paymentMethod=${paymentMethod}`,
+      );
+
+      // Lấy chi tiết đơn để in bill
+      const res = await axiosInstance.get(`/orders/${checkoutModal.orderId}`);
+      const orderDetails = res.data;
+
+      const invoice: InvoiceData = {
+        orderId: checkoutModal.orderId,
+        tableName: checkoutModal.tableName,
+        orderType: orderDetails.orderType || "DINE_IN",
+        cashierName: orderDetails.account?.username,
+        createdAt: orderDetails.createdAt,
+        items: (orderDetails.orderDetails || []).map(
+          (d: { product?: { name?: string }; quantity: number; price: number; note?: string }) => ({
+            name: d.product?.name || "Món",
+            quantity: d.quantity,
+            price: d.price,
+            note: d.note,
+          }),
+        ),
+        totalAmount: checkoutModal.totalAmount,
+        paymentMethod,
+        customerPaid,
+        change,
+      };
+
+      setCheckoutModal((prev) => ({ ...prev, isOpen: false }));
+      await mutate();
+      endMutation(true); // Skip regular toast
+
+      // Mở modal in hóa đơn
+      setInvoiceModal({
+        isOpen: true,
+        invoice,
+      });
+    } catch (err) {
+      console.error(err);
+      endMutation();
+      alert("Có lỗi xảy ra khi thanh toán");
+    }
+  };
+
+  const handleConfirmSwitchTable = async (currentTableId: number, targetTableId: number) => {
+    try {
+      startMutation();
+      await axiosInstance.put(
+        `/orders/switch-table?currentTableId=${currentTableId}&targetTableId=${targetTableId}`,
+      );
+      await mutate();
+      endMutation();
+      setToastMessage("Chuyển bàn thành công ✓");
+    } catch (error: unknown) {
+      endMutation();
+      const err = error as { response?: { data?: { message?: string } } };
+      alert(err.response?.data?.message || "Có lỗi xảy ra khi chuyển bàn");
+    }
+  };
+
+  const handleOpenEditModal = (table: { id: number; name: string; status: string }) => {
     if (table.status === "OCCUPIED") {
       setErrorModal({
         isOpen: true,
@@ -174,10 +244,12 @@ export default function TablesPage() {
       setEditingTable(null);
       await mutateTables();
       endMutation(); // Show SWR toast
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       endMutation();
-      const backendMessage = err?.response?.data?.message || "Có lỗi xảy ra khi sửa bàn";
+      const backendMessage =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Có lỗi xảy ra khi sửa bàn";
       setErrorModal({
         isOpen: true,
         message: backendMessage,
@@ -187,7 +259,7 @@ export default function TablesPage() {
     }
   };
 
-  const handleDeleteTableClick = (table: any) => {
+  const handleDeleteTableClick = (table: { id: number; name: string; status: string }) => {
     if (table.status === "OCCUPIED") {
       setErrorModal({
         isOpen: true,
@@ -209,10 +281,12 @@ export default function TablesPage() {
           await axiosInstance.delete(`/tables/${table.id}`);
           await mutateTables();
           endMutation(); // Show SWR toast
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error(err);
           endMutation();
-          const backendMessage = err?.response?.data?.message || "Có lỗi xảy ra khi xóa bàn";
+          const backendMessage =
+            (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+            "Có lỗi xảy ra khi xóa bàn";
           setErrorModal({
             isOpen: true,
             message: backendMessage,
@@ -238,6 +312,7 @@ export default function TablesPage() {
         <h2 className="text-xl font-bold text-slate-800">Sơ Đồ Bàn</h2>
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={async () => {
               startMutation();
               await mutate();
@@ -249,6 +324,7 @@ export default function TablesPage() {
             <RefreshCw size={18} className={showOverlay ? "animate-spin" : ""} /> Làm mới
           </button>
           <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
             className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
           >
@@ -283,6 +359,7 @@ export default function TablesPage() {
                   {/* 3-dot dropdown menu */}
                   <div className="absolute top-3 right-3">
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setOpenDropdownId(openDropdownId === table.id ? null : table.id);
@@ -292,8 +369,25 @@ export default function TablesPage() {
                       <MoreVertical size={16} />
                     </button>
                     {openDropdownId === table.id && (
-                      <div className="absolute right-0 mt-1 w-28 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
+                      <div className="absolute right-0 mt-1 w-36 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
+                        {isUsing && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenDropdownId(null);
+                              setSwitchTableModal({
+                                isOpen: true,
+                                currentTable: table,
+                              });
+                            }}
+                            className="w-full px-3 py-2 text-left text-sm font-semibold text-blue-600 hover:bg-blue-50 flex items-center gap-2 transition-colors border-b border-slate-100"
+                          >
+                            <ArrowRightLeft size={14} /> Chuyển bàn
+                          </button>
+                        )}
                         <button
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setOpenDropdownId(null);
@@ -304,6 +398,7 @@ export default function TablesPage() {
                           <Pencil size={14} /> Sửa
                         </button>
                         <button
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setOpenDropdownId(null);
@@ -322,6 +417,7 @@ export default function TablesPage() {
 
                   {isUsing ? (
                     <button
+                      type="button"
                       onClick={() => handleCheckout(table.id)}
                       className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold bg-amber-500 text-slate-900 hover:bg-amber-600 transition-colors shadow-md"
                     >
@@ -346,6 +442,7 @@ export default function TablesPage() {
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <h3 className="text-xl font-bold text-slate-800">Thêm bàn mới</h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate-400 hover:bg-slate-100 p-2 rounded-lg"
               >
@@ -384,6 +481,7 @@ export default function TablesPage() {
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <h3 className="text-xl font-bold text-slate-800">Sửa tên bàn</h3>
               <button
+                type="button"
                 onClick={() => setEditingTable(null)}
                 className="text-slate-400 hover:bg-slate-100 p-2 rounded-lg"
               >
@@ -427,6 +525,7 @@ export default function TablesPage() {
               <h3 className="text-xl font-bold text-slate-800">Thông báo lỗi</h3>
               <p className="text-slate-500 text-sm font-medium">{errorModal.message}</p>
               <button
+                type="button"
                 onClick={() => setErrorModal({ isOpen: false, message: "" })}
                 className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-red-500/20"
               >
@@ -448,6 +547,32 @@ export default function TablesPage() {
         confirmText={confirmModal.confirmText}
       />
 
+      {/* Modal Thanh toán (Tiền mặt / Chuyển khoản VietQR) */}
+      <CheckoutModal
+        isOpen={checkoutModal.isOpen}
+        onClose={() => setCheckoutModal((prev) => ({ ...prev, isOpen: false }))}
+        orderId={checkoutModal.orderId}
+        tableName={checkoutModal.tableName}
+        totalAmount={checkoutModal.totalAmount}
+        onConfirmCheckout={handleConfirmCheckout}
+      />
+
+      {/* Modal In Hóa Đơn */}
+      <InvoiceModal
+        isOpen={invoiceModal.isOpen}
+        onClose={() => setInvoiceModal({ isOpen: false, invoice: null })}
+        invoice={invoiceModal.invoice}
+      />
+
+      {/* Modal Chuyển Bàn Nhanh */}
+      <SwitchTableModal
+        isOpen={switchTableModal.isOpen}
+        onClose={() => setSwitchTableModal({ isOpen: false, currentTable: null })}
+        currentTable={switchTableModal.currentTable}
+        availableTables={tables.filter((t) => t.status === "AVAILABLE")}
+        onConfirmSwitch={handleConfirmSwitchTable}
+      />
+
       {/* Checkout Success Modal */}
       {checkoutSuccessModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
@@ -461,6 +586,7 @@ export default function TablesPage() {
                 {checkoutSuccessModal.message}
               </p>
               <button
+                type="button"
                 onClick={() => setCheckoutSuccessModal({ isOpen: false, message: "" })}
                 className="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20 cursor-pointer"
               >

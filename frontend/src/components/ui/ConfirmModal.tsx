@@ -77,12 +77,14 @@ export function ConfirmModal({
           <div className="text-slate-500 text-sm font-medium leading-relaxed">{message}</div>
           <div className="flex gap-3 mt-6">
             <button
+              type="button"
               onClick={onClose}
               className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl transition-colors cursor-pointer"
             >
               {cancelText}
             </button>
             <button
+              type="button"
               onClick={() => {
                 onConfirm();
                 onClose();

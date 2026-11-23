@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     5. Nếu câu hỏi không liên quan đến quán cà phê hoặc không có trong dữ liệu, hãy lịch sự từ chối hoặc trả lời chung chung.
     `;
 
-    let fullPrompt = systemInstruction + "\n\nLịch sử trò chuyện:\n";
+    let fullPrompt = `${systemInstruction}\n\nLịch sử trò chuyện:\n`;
     if (history && history.length > 0) {
       // 2. Sử dụng interface ChatMessage thay cho 'any'
       history.forEach((msg: ChatMessage) => {

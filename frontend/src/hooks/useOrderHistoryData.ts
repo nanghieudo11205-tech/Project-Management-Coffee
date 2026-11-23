@@ -26,6 +26,7 @@ interface OrderDetailItem {
   product: Product;
   quantity: number;
   price: number;
+  note?: string;
 }
 
 interface OrderItem {
@@ -35,6 +36,8 @@ interface OrderItem {
   orderDetails: OrderDetailItem[];
   totalAmount: number;
   status: string;
+  orderType?: string;
+  paymentMethod?: string;
   createdAt: string;
 }
 

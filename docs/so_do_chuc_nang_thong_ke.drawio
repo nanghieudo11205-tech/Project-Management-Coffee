@@ -1,0 +1,125 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="so-do-thong-ke" name="Chức năng Thống kê và Báo cáo">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Tiêu đề sơ đồ -->
+        <mxCell id="title" value="Chức năng phân hệ thống kê và báo cáo" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="180" y="40" width="380" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Tác nhân ngoài: Ban quản trị (Hình chữ nhật) -->
+        <mxCell id="admin" value="Ban quản trị" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=14;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="60" y="270" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Tiến trình 5.1 (Hình tròn) -->
+        <mxCell id="p51" value="5.1. Thống kê&lt;br&gt;kinh doanh" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="360" y="150" width="110" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Tiến trình 5.2 (Hình tròn) -->
+        <mxCell id="p52" value="5.2. Báo cáo&lt;br&gt;định kỳ" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="360" y="440" width="110" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- KHO DỮ LIỆU: 2 ĐƯỜNG KẺ SONG SONG TRÊN VÀ DƯỚI -->
+        <!-- D1: Hóa đơn Doanh thu -->
+        <mxCell id="d1" value="Hóa đơn Doanh&lt;br&gt;thu" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="350" y="40" width="130" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- D2: Danh sách phòng -->
+        <mxCell id="d2" value="Danh sách&lt;br&gt;phòng" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="580" y="110" width="120" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- D3: Danh sách dịch vụ -->
+        <mxCell id="d3" value="Danh sách dịch&lt;br&gt;vụ" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="590" y="210" width="130" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- D4: Hồ sơ nhân viên -->
+        <mxCell id="d4" value="Hồ sơ nhân viên" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="590" y="340" width="130" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- D5: Báo cáo thống kê -->
+        <mxCell id="d5" value="Báo cáo thống&lt;br&gt;kê" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="550" y="520" width="130" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- CÁC ĐƯỜNG LUỒNG DỮ LIỆU (MŨI TÊN CÓ CHỮ) -->
+        <!-- 1. Yêu cầu thống kê kinh doanh: Admin -> 5.1 -->
+        <mxCell id="e1" value="Yêu cầu thống kê kinh doanh" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;fontSize=12;fontFamily=Helvetica;" edge="1" parent="1" source="admin" target="p51">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="120" y="205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 2. Kết quả thống kê kinh doanh: 5.1 -> Admin -->
+        <mxCell id="e2" value="Kết quả thống kê kinh doanh" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;fontSize=12;fontFamily=Helvetica;" edge="1" parent="1" source="p51" target="admin">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 3. 5.1 -> D1 (Hóa đơn Doanh thu) -->
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;" edge="1" parent="1" source="p51" target="d1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 4. 5.1 -> D2 (Danh sách phòng) -->
+        <mxCell id="e4" value="" style="edgeStyle=straight;rounded=0;html=1;exitX=0.9;exitY=0.2;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;" edge="1" parent="1" source="p51" target="d2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 5. 5.1 -> D3 (Danh sách dịch vụ) -->
+        <mxCell id="e5" value="" style="edgeStyle=straight;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;" edge="1" parent="1" source="p51" target="d3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 6. D4 (Hồ sơ nhân viên) -> 5.1 -->
+        <mxCell id="e6" value="" style="edgeStyle=straight;rounded=0;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.8;entryY=0.9;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;" edge="1" parent="1" source="d4" target="p51">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 7. Dữ liệu thống kê tổng hợp: 5.1 -> 5.2 -->
+        <mxCell id="e7" value="Dữ liệu&lt;br&gt;thống kê&lt;br&gt;tổng hợp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;fontSize=12;fontFamily=Helvetica;" edge="1" parent="1" source="p51" target="p52">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 8. Yêu cầu báo cáo định kỳ: Admin -> 5.2 -->
+        <mxCell id="e8" value="Yêu cầu báo cáo định kỳ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;fontSize=12;fontFamily=Helvetica;" edge="1" parent="1" source="admin" target="p52">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="144" y="484" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 9. Báo cáo định kỳ: 5.2 -> Admin -->
+        <mxCell id="e9" value="Báo cáo định kỳ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;fontSize=12;fontFamily=Helvetica;" edge="1" parent="1" source="p52" target="admin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="90" y="517" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 10. 5.2 -> D5 (Báo cáo thống kê) -->
+        <mxCell id="e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.3;" edge="1" parent="1" source="p52" target="d5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="495" />
+              <mxPoint x="615" y="495" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,8 +1,20 @@
 "use client";
-import { Check, CheckCircle, Coffee, Minus, Plus, ShoppingCart } from "lucide-react";
+import {
+  Check,
+  CheckCircle,
+  Coffee,
+  Minus,
+  Package,
+  Plus,
+  Printer,
+  ShoppingCart,
+  Utensils,
+} from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { mutate as globalMutate } from "swr";
-import { DataUpdatedToast, MutatingOverlay, useSmartOverlay } from "@/components/ui/LoadingOverlay";
+import { type InvoiceData, InvoiceModal } from "@/components/ui/InvoiceModal";
+import { useSmartOverlay } from "@/components/ui/LoadingOverlay";
 import { useOrdersPageData } from "@/hooks/useOrdersPageData";
 import axiosInstance from "@/lib/axios";
 
@@ -16,23 +28,23 @@ interface Product {
 
 interface CartItem extends Product {
   quantity: number;
+  note?: string;
 }
 
 export default function OrdersPage() {
   const [activeCategory, setActiveCategory] = useState<number | "ALL">("ALL");
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [orderType, setOrderType] = useState<"DINE_IN" | "TAKEAWAY">("DINE_IN");
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdInvoice, setCreatedInvoice] = useState<InvoiceData | null>(null);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
 
   // SWR: Dữ liệu cache hiển thị ngay khi quay lại trang
   const { products, categories, tables, isLoading, isValidating, mutateTables } =
     useOrdersPageData();
-  const { showOverlay, showToast, startMutation, endMutation } = useSmartOverlay(
-    products,
-    isValidating,
-    isLoading,
-  );
+  const { startMutation, endMutation } = useSmartOverlay(products, isValidating, isLoading);
 
   const addToCart = (product: Product) => {
     setCart((prev) => {
@@ -40,7 +52,7 @@ export default function OrdersPage() {
       if (exist) {
         return prev.map((p) => (p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p));
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: 1, note: "" }];
     });
   };
 
@@ -58,20 +70,47 @@ export default function OrdersPage() {
     );
   };
 
+  const updateNote = (id: number, note: string) => {
+    setCart((prev) => prev.map((p) => (p.id === id ? { ...p, note } : p)));
+  };
+
   const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-    if (!selectedTableId) return alert("Vui lòng chọn bàn!");
+    if (orderType === "DINE_IN" && !selectedTableId) return alert("Vui lòng chọn bàn!");
     if (cart.length === 0) return alert("Vui lòng chọn món!");
 
     try {
       setSaving(true);
       startMutation();
       const payload = {
-        tableId: selectedTableId,
-        details: cart.map((item) => ({ productId: item.id, quantity: item.quantity })),
+        tableId: orderType === "DINE_IN" ? selectedTableId : null,
+        orderType,
+        details: cart.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+          note: item.note || undefined,
+        })),
       };
-      await axiosInstance.post("/orders", payload);
+      const res = await axiosInstance.post("/orders", payload);
+
+      const targetTable = tables.find((t) => t.id === selectedTableId);
+      setCreatedInvoice({
+        orderId: res.data.id,
+        tableName: orderType === "DINE_IN" ? targetTable?.name : null,
+        orderType,
+        cashierName: res.data.account?.username,
+        createdAt: res.data.createdAt,
+        items: cart.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          note: item.note,
+        })),
+        totalAmount,
+        paymentMethod: "CASH",
+      });
+
       setCart([]);
       setSelectedTableId(null);
       // Refresh bàn trống + invalidate global /orders cache cho order-history
@@ -97,6 +136,7 @@ export default function OrdersPage() {
         <div className="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
           <div className="p-4 border-b border-slate-100 flex gap-2 overflow-x-auto no-scrollbar">
             <button
+              type="button"
               onClick={() => setActiveCategory("ALL")}
               className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-colors ${activeCategory === "ALL" ? "bg-amber-500 text-slate-900" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
             >
@@ -104,6 +144,7 @@ export default function OrdersPage() {
             </button>
             {categories.map((cat) => (
               <button
+                type="button"
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-colors ${activeCategory === cat.id ? "bg-amber-500 text-slate-900" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
@@ -123,21 +164,28 @@ export default function OrdersPage() {
             <div className="flex-1 overflow-y-auto p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredProducts.map((p) => (
                 <div
+                  role="button"
+                  tabIndex={0}
                   key={p.id}
                   onClick={() => addToCart(p)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") addToCart(p);
+                  }}
                   className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden cursor-pointer hover:border-amber-400 hover:shadow-md transition-all group"
                 >
                   <div className="h-32 bg-slate-200 relative">
                     {p.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={
                           p.imageUrl?.startsWith("http")
                             ? p.imageUrl
                             : `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"}/uploads/${p.imageUrl}`
                         }
                         alt={p.name}
+                        width={200}
+                        height={200}
                         className="w-full h-full object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-400">
@@ -163,58 +211,114 @@ export default function OrdersPage() {
         </div>
 
         <div className="w-96 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col">
-          <div className="p-4 border-b border-slate-100 flex items-center gap-3">
-            <ShoppingCart size={24} className="text-slate-700" />
-            <h3 className="font-bold text-lg text-slate-800">Đơn hàng hiện tại</h3>
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShoppingCart size={22} className="text-slate-700" />
+              <h3 className="font-bold text-lg text-slate-800">Đơn hàng</h3>
+            </div>
+            {/* Lựa chọn hình thức: Tại bàn hoặc Mang về */}
+            <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setOrderType("DINE_IN")}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-colors ${
+                  orderType === "DINE_IN"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <Utensils size={13} /> Tại bàn
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setOrderType("TAKEAWAY");
+                  setSelectedTableId(null);
+                }}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-colors ${
+                  orderType === "TAKEAWAY"
+                    ? "bg-amber-600 text-white shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <Package size={13} /> Mang về
+              </button>
+            </div>
           </div>
 
           <div className="p-4 border-b border-slate-100">
-            <label className="block text-sm font-medium text-slate-700 mb-2">Chọn bàn trống</label>
-            <select
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none font-medium"
-              value={selectedTableId || ""}
-              onChange={(e) => setSelectedTableId(Number(e.target.value))}
-            >
-              <option value="" disabled>
-                -- Vui lòng chọn bàn --
-              </option>
-              {tables.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+            {orderType === "DINE_IN" ? (
+              <>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Chọn bàn trống
+                </label>
+                <select
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none font-medium"
+                  value={selectedTableId || ""}
+                  onChange={(e) => setSelectedTableId(Number(e.target.value))}
+                >
+                  <option value="" disabled>
+                    -- Vui lòng chọn bàn --
+                  </option>
+                  {tables.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs font-semibold">
+                <Package size={16} className="text-amber-600" />
+                <span>Đơn mang đi (Takeaway) - Không cần chọn bàn</span>
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
             {cart.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between bg-white border border-slate-100 p-3 rounded-xl shadow-sm"
+                className="bg-white border border-slate-100 p-3 rounded-xl shadow-sm space-y-2"
               >
-                <div className="flex-1 pr-2">
-                  <h5 className="font-semibold text-slate-800 text-sm line-clamp-1">{item.name}</h5>
-                  <p className="text-amber-600 font-bold text-sm mt-0.5">
-                    {(item.price * item.quantity).toLocaleString("vi-VN")} đ
-                  </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 pr-2">
+                    <h5 className="font-semibold text-slate-800 text-sm line-clamp-1">
+                      {item.name}
+                    </h5>
+                    <p className="text-amber-600 font-bold text-sm mt-0.5">
+                      {(item.price * item.quantity).toLocaleString("vi-VN")} đ
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1">
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(item.id, -1)}
+                      className="p-1 hover:bg-white rounded text-slate-600 shadow-sm transition-colors"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="w-6 text-center font-bold text-sm text-slate-800">
+                      {item.quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(item.id, 1)}
+                      className="p-1 hover:bg-white rounded text-slate-600 shadow-sm transition-colors"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1">
-                  <button
-                    onClick={() => updateQuantity(item.id, -1)}
-                    className="p-1 hover:bg-white rounded text-slate-600 shadow-sm transition-colors"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <span className="w-6 text-center font-bold text-sm text-slate-800">
-                    {item.quantity}
-                  </span>
-                  <button
-                    onClick={() => updateQuantity(item.id, 1)}
-                    className="p-1 hover:bg-white rounded text-slate-600 shadow-sm transition-colors"
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
+
+                {/* Input ghi chú món */}
+                <input
+                  type="text"
+                  placeholder="Ghi chú (ít đá, ít ngọt...)"
+                  value={item.note || ""}
+                  onChange={(e) => updateNote(item.id, e.target.value)}
+                  className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500 text-slate-700 placeholder:text-slate-400"
+                />
               </div>
             ))}
             {cart.length === 0 && (
@@ -233,9 +337,12 @@ export default function OrdersPage() {
               </span>
             </div>
             <button
+              type="button"
               onClick={handleCheckout}
-              disabled={cart.length === 0 || !selectedTableId || saving}
-              className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-slate-200 disabled:text-slate-400 text-slate-900 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 disabled:shadow-none flex items-center justify-center gap-2"
+              disabled={
+                cart.length === 0 || (orderType === "DINE_IN" && !selectedTableId) || saving
+              }
+              className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-slate-200 disabled:text-slate-400 text-slate-900 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 disabled:shadow-none flex items-center justify-center gap-2 cursor-pointer"
             >
               <Check size={20} /> {saving ? "Đang xử lý..." : "Xác nhận đặt hàng"}
             </button>
@@ -252,17 +359,40 @@ export default function OrdersPage() {
                 <CheckCircle size={32} className="text-emerald-500" />
               </div>
               <h3 className="text-xl font-bold text-slate-800">Đặt hàng thành công</h3>
-              <p className="text-slate-500 text-sm">Đơn hàng đã được ghi nhận vào hệ thống.</p>
-              <button
-                onClick={() => setShowSuccessModal(false)}
-                className="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
-              >
-                OK
-              </button>
+              <p className="text-slate-500 text-sm">
+                Đơn hàng #{createdInvoice?.orderId} (
+                {orderType === "DINE_IN" ? "Tại bàn" : "Mang về"}) đã được tạo!
+              </p>
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowSuccessModal(false)}
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition-colors"
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    setIsInvoiceOpen(true);
+                  }}
+                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md"
+                >
+                  <Printer size={16} /> In hóa đơn
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Modal In Hóa Đơn */}
+      <InvoiceModal
+        isOpen={isInvoiceOpen}
+        onClose={() => setIsInvoiceOpen(false)}
+        invoice={createdInvoice}
+      />
     </>
   );
 }
