@@ -77,7 +77,15 @@ public class SecurityConfig {
                         .accessDeniedHandler(restAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/google", "/uploads/**", "/error").permitAll()
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/api/auth/register",
+                                "/api/auth/google",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password",
+                                "/uploads/**",
+                                "/error"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 );
         http.authenticationProvider(authenticationProvider());

@@ -17,25 +17,32 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
-
 let redirectCallback: ((path: string) => void) | null = null;
 
 export function setApiRedirectCallback(cb: (path: string) => void) {
   redirectCallback = cb;
 }
 
+function resolveEndpointUrl(endpoint: string): string {
+  if (endpoint.startsWith("http")) {
+    return endpoint;
+  }
+  const normalized = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  if (normalized.startsWith("/auth/")) {
+    return `/api${normalized}`;
+  }
+  return `/api/proxy${normalized}`;
+}
+
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { params, body, headers = {}, ...restOptions } = options;
 
-  let url = endpoint.startsWith("http")
-    ? endpoint
-    : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+  let url = resolveEndpointUrl(endpoint);
 
   if (params) {
     const searchParams = new URLSearchParams();
     for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== null) {
+      if (value !== undefined && value !== null && value !== "") {
         searchParams.append(key, String(value));
       }
     }
@@ -45,10 +52,8 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     }
   }
 
-  const token = Cookies.get("token");
   const requestHeaders: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(headers as Record<string, string>),
   };
 
@@ -66,6 +71,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
   const response = await fetch(url, {
     ...restOptions,
+    credentials: "include",
     headers: requestHeaders,
     body: requestBody,
   });
@@ -78,7 +84,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
       errorData = await response.text().catch(() => null);
     }
 
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
       const isLoginPage = typeof window !== "undefined" && window.location.pathname === "/login";
       if (!isLoginPage) {
         Cookies.remove("token");
@@ -92,8 +98,15 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
       }
     }
 
+    const validationErrors = (errorData as { validationErrors?: Record<string, string> })
+      ?.validationErrors;
+    const firstValidationMsg = validationErrors
+      ? Object.values(validationErrors).join("; ")
+      : undefined;
     const message =
+      firstValidationMsg ||
       (errorData as { message?: string })?.message ||
+      (errorData as { error?: string })?.error ||
       `Yêu cầu thất bại với mã ${response.status}: ${response.statusText}`;
 
     throw new ApiError(message, response.status, errorData);
@@ -113,7 +126,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
 /**
  * Type-Safe Native Fetch API Client
- * Tự động gắn Token xác thực, xử lý lỗi, và format request chuẩn
+ * Giao tiếp qua Next.js BFF (/api/auth/* & /api/proxy/*) với HttpOnly Cookie JWT
  */
 export const apiClient = {
   get: <T>(endpoint: string, options?: RequestOptions) =>

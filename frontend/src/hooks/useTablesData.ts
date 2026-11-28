@@ -1,43 +1,49 @@
 "use client";
 
 import useSWR from "swr";
-import { axiosFetcher } from "@/lib/swr";
+import { apiClient } from "@/lib/api-client";
 
-interface Table {
+export interface Table {
   id: number;
   name: string;
   status: string;
 }
 
-interface Order {
+export interface OrderDetailSummary {
   id: number;
-  status: string;
-  totalAmount: number;
-  cafeTable: Table;
+  quantity: number;
+  price: number;
+  note?: string | null;
+  product?: { id: number; name: string } | null;
 }
 
-/**
- * Custom hook quản lý dữ liệu Sơ đồ bàn với SWR caching.
- *
- * - Dữ liệu cache hiển thị ngay khi quay lại trang
- * - Trả về mutate để refresh sau khi thao tác (checkout, thêm bàn)
- */
+export interface Order {
+  id: number;
+  status: string;
+  orderType?: string;
+  totalAmount: number;
+  createdAt?: string;
+  cafeTable?: Table | null;
+  orderDetails?: OrderDetailSummary[];
+}
+
+const fetcher = <T>(url: string) => apiClient.get<T>(url);
+
 export function useTablesData() {
   const {
     data: tablesData,
     isLoading: tablesLoading,
     isValidating: tablesValidating,
     mutate: mutateTables,
-  } = useSWR<Table[]>("/tables", axiosFetcher);
+  } = useSWR<Table[]>("/tables", fetcher);
 
   const {
     data: ordersData,
     isLoading: ordersLoading,
     isValidating: ordersValidating,
     mutate: mutateOrders,
-  } = useSWR<Order[]>("/orders", axiosFetcher);
+  } = useSWR<Order[]>("/orders", fetcher);
 
-  // Lọc orders PENDING
   const pendingOrders = (ordersData || []).filter((o) => o.status === "PENDING");
 
   return {
@@ -45,13 +51,9 @@ export function useTablesData() {
     orders: pendingOrders,
     isLoading: tablesLoading || ordersLoading,
     isValidating: tablesValidating || ordersValidating,
-    // Refresh chỉ tables (nhanh) — dùng cho thêm bàn, làm mới
     mutateTables,
-    // Refresh cả tables + orders — dùng cho checkout (thay đổi cả hai)
     mutate: async () => {
       await Promise.all([mutateTables(), mutateOrders()]);
     },
   };
 }
-
-export type { Order, Table };

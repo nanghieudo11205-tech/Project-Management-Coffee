@@ -1,59 +1,60 @@
 import Cookies from "js-cookie";
 import { create } from "zustand";
 
+export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE" | "STAFF";
+
 export interface UserState {
   username: string | null;
-  role: "ADMIN" | "STAFF" | null;
-  token: string | null;
+  role: UserRole | null;
   isAuthenticated: boolean;
-  setAuth: (payload: { username: string; role: string; token: string }) => void;
-  logout: () => void;
+  setAuth: (payload: { username: string; role: string }) => void;
+  logout: () => Promise<void>;
   syncFromCookies: () => void;
 }
 
 /**
- * Zustand Store quản lý trạng thái xác thực và người dùng
- * Đồng bộ hai chiều với Cookies cho Next.js Middleware và Client Layouts
+ * Zustand Store quản lý trạng thái người dùng (JWT được lưu trong HttpOnly cookie qlcafe_token)
  */
 export const useAuthStore = create<UserState>((set) => ({
   username: null,
   role: null,
-  token: null,
   isAuthenticated: false,
 
-  setAuth: ({ username, role, token }) => {
-    Cookies.set("token", token, { path: "/" });
-    Cookies.set("role", role, { path: "/" });
-    Cookies.set("username", username, { path: "/" });
+  setAuth: ({ username, role }) => {
     set({
       username,
-      role: role as "ADMIN" | "STAFF",
-      token,
+      role: role as UserRole,
       isAuthenticated: true,
     });
   },
 
-  logout: () => {
-    Cookies.remove("token");
-    Cookies.remove("role");
-    Cookies.remove("username");
-    set({
-      username: null,
-      role: null,
-      token: null,
-      isAuthenticated: false,
-    });
+  logout: async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // Bỏ qua lỗi mạng khi đăng xuất
+    } finally {
+      Cookies.remove("token");
+      Cookies.remove("role");
+      Cookies.remove("username");
+      set({
+        username: null,
+        role: null,
+        isAuthenticated: false,
+      });
+    }
   },
 
   syncFromCookies: () => {
-    const token = Cookies.get("token") || null;
-    const role = (Cookies.get("role") as "ADMIN" | "STAFF") || null;
+    const role = (Cookies.get("role") as UserRole) || null;
     const username = Cookies.get("username") || null;
     set({
-      token,
       role,
       username,
-      isAuthenticated: Boolean(token),
+      isAuthenticated: Boolean(username && role),
     });
   },
 }));

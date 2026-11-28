@@ -1,54 +1,49 @@
 "use client";
 
 import useSWR from "swr";
-import { axiosFetcher } from "@/lib/swr";
+import { apiClient } from "@/lib/api-client";
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
 }
 
-interface Product {
+export interface Product {
   id: number;
   name: string;
   price: number;
   imageUrl?: string;
-  category: Category;
+  category?: Category;
 }
 
-interface Table {
+export interface Table {
   id: number;
   name: string;
   status: string;
 }
 
-/**
- * Custom hook quản lý dữ liệu trang Đặt hàng với SWR caching.
- *
- * - Dữ liệu products/categories/tables cache ngay khi quay lại trang
- * - Trả về `mutateTables` để refresh danh sách bàn trống sau khi đặt hàng
- */
+const fetcher = <T>(url: string) => apiClient.get<T>(url);
+
 export function useOrdersPageData() {
   const {
     data: productsData,
     isLoading: productsLoading,
     isValidating: productsValidating,
-  } = useSWR<{ content: Product[] }>("/products?size=1000", axiosFetcher);
+  } = useSWR<{ content: Product[] }>("/products?size=1000", fetcher);
 
   const {
     data: categoriesData,
     isLoading: categoriesLoading,
     isValidating: categoriesValidating,
-  } = useSWR<Category[]>("/categories", axiosFetcher);
+  } = useSWR<Category[]>("/categories", fetcher);
 
   const {
     data: tablesData,
     isLoading: tablesLoading,
     isValidating: tablesValidating,
     mutate: mutateTables,
-  } = useSWR<Table[]>("/tables", axiosFetcher);
+  } = useSWR<Table[]>("/tables", fetcher);
 
-  // Chỉ lấy bàn trống
   const availableTables = (tablesData || []).filter((t) => t.status === "AVAILABLE");
 
   return {
@@ -60,5 +55,3 @@ export function useOrdersPageData() {
     mutateTables,
   };
 }
-
-export type { Category, Product, Table };

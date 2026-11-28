@@ -3,7 +3,7 @@
 import { Calendar, DollarSign, ShoppingBag, TrendingUp, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { RevenueItem } from "@/hooks/useDashboardData";
-import axiosInstance from "@/lib/axios";
+import { apiClient } from "@/lib/api-client";
 
 // --- Vietnamese Date Picker helpers ---
 
@@ -91,7 +91,7 @@ function ViMonthInput({
   );
 }
 
-type ViewMode = "day" | "month" | "year";
+type ViewMode = "day" | "week" | "month" | "year";
 
 interface RevenueDetailModalProps {
   isOpen: boolean;
@@ -131,14 +131,14 @@ export default function RevenueDetailModal({ isOpen, onClose }: RevenueDetailMod
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get<RevenueItem[]>(`/revenue/stats?type=${viewMode}`);
-        let filtered = res.data;
+        const resData = await apiClient.get<RevenueItem[]>(`/revenue/stats?type=${viewMode}`);
+        let filtered = resData;
 
         if (viewMode === "day") {
           filtered = filtered.filter((item) => item.period >= fromDate && item.period <= toDate);
         } else if (viewMode === "month") {
           filtered = filtered.filter((item) => item.period >= fromMonth && item.period <= toMonth);
-        } else {
+        } else if (viewMode === "year") {
           filtered = filtered.filter((item) => item.period >= fromYear && item.period <= toYear);
         }
 
@@ -164,9 +164,13 @@ export default function RevenueDetailModal({ isOpen, onClose }: RevenueDetailMod
       const d = new Date(period);
       return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
     }
+    if (viewMode === "week") {
+      const [y, w] = period.split("-W");
+      return w ? `Tuần ${w}/${y}` : period;
+    }
     if (viewMode === "month") {
       const [y, m] = period.split("-");
-      return `Tháng ${parseInt(m)}/${y}`;
+      return `Tháng ${Number.parseInt(m, 10)}/${y}`;
     }
     return `Năm ${period}`;
   };
@@ -191,6 +195,7 @@ export default function RevenueDetailModal({ isOpen, onClose }: RevenueDetailMod
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="text-slate-400 hover:bg-slate-100 p-2 rounded-lg transition-colors cursor-pointer"
           >
@@ -203,11 +208,13 @@ export default function RevenueDetailModal({ isOpen, onClose }: RevenueDetailMod
           <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
             {[
               { key: "day" as ViewMode, label: "Theo Ngày", icon: Calendar },
+              { key: "week" as ViewMode, label: "Theo Tuần", icon: Calendar },
               { key: "month" as ViewMode, label: "Theo Tháng", icon: Calendar },
               { key: "year" as ViewMode, label: "Theo Năm", icon: Calendar },
             ].map((tab) => (
               <button
                 key={tab.key}
+                type="button"
                 onClick={() => setViewMode(tab.key)}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer ${
                   viewMode === tab.key
@@ -315,7 +322,13 @@ export default function RevenueDetailModal({ isOpen, onClose }: RevenueDetailMod
                 <tr className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wide">
                   <th className="p-3 font-semibold rounded-tl-lg">#</th>
                   <th className="p-3 font-semibold">
-                    {viewMode === "day" ? "Ngày" : viewMode === "month" ? "Tháng" : "Năm"}
+                    {viewMode === "day"
+                      ? "Ngày"
+                      : viewMode === "week"
+                        ? "Tuần"
+                        : viewMode === "month"
+                          ? "Tháng"
+                          : "Năm"}
                   </th>
                   <th className="p-3 font-semibold text-right">Số đơn hàng</th>
                   <th className="p-3 font-semibold text-right rounded-tr-lg">Doanh thu</th>

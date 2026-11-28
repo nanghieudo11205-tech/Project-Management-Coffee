@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { setApiRedirectCallback } from "@/lib/api-client";
 import { setRedirectCallback } from "@/lib/axios";
@@ -14,9 +14,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const router = useRouter();
   const isLoginPage = pathname === "/login";
   const syncFromCookies = useAuthStore((s) => s.syncFromCookies);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Inject Next.js router vào interceptor
-  // để redirect 401/403 không gây hard reload
   useEffect(() => {
     syncFromCookies();
     setRedirectCallback((path: string) => {
@@ -39,10 +38,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <QueryProvider>
       <SWRProvider>
         <div className="flex min-h-screen bg-slate-50 text-slate-900">
-          <Sidebar />
-          <div className="flex-1 flex flex-col ml-64 max-md:ml-0 min-h-screen relative">
-            <Navbar />
-            <main className="flex-1 p-8 overflow-y-auto w-full">{children}</main>
+          <Sidebar mobileOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+          <div className="flex-1 flex flex-col md:ml-64 min-h-screen relative min-w-0">
+            <Navbar onOpenSidebar={() => setMobileMenuOpen(true)} />
+            <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto w-full">{children}</main>
           </div>
         </div>
       </SWRProvider>

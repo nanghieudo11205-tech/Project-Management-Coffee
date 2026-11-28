@@ -3,8 +3,10 @@ package com.qlcafe.backend.controller;
 import com.qlcafe.backend.dto.AccountResponse;
 import com.qlcafe.backend.dto.AuthRequest;
 import com.qlcafe.backend.dto.AuthResponse;
+import com.qlcafe.backend.dto.ForgotPasswordRequest;
 import com.qlcafe.backend.dto.GoogleAuthRequest;
 import com.qlcafe.backend.dto.MessageResponse;
+import com.qlcafe.backend.dto.ResetPasswordRequest;
 import com.qlcafe.backend.security.JwtAuthenticationFilter;
 import com.qlcafe.backend.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +39,17 @@ public class AuthController {
     @PostMapping("/google")
     public ResponseEntity<AuthResponse> loginWithGoogle(@RequestBody GoogleAuthRequest request) {
         return ResponseEntity.ok(authService.loginWithGoogle(request));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        return ResponseEntity.ok(new MessageResponse(authService.requestPasswordReset(request)));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(new MessageResponse("Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại."));
     }
 
     @PostMapping("/logout")

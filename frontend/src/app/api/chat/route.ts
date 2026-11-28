@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { BACKEND_API_URL, getServerAuthToken } from "@/lib/server-auth";
 
-// 1. Khai báo interface cho lịch sử tin nhắn để loại bỏ 'any'
 interface ChatMessage {
   role: "user" | "ai" | string;
   content: string;
@@ -11,10 +11,30 @@ const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
   console.warn("GEMINI_API_KEY is not set in the environment variables.");
 }
-// Initialize with dummy key to prevent crash, but API will fail if not real
 const genAI = new GoogleGenerativeAI(apiKey || "dummy_key");
 
 export async function POST(req: Request) {
+  const token = await getServerAuthToken();
+  if (!token) {
+    return NextResponse.json({ error: "Bạn cần đăng nhập để sử dụng Trợ lý AI" }, { status: 401 });
+  }
+
+  try {
+    const meRes = await fetch(`${BACKEND_API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!meRes.ok) {
+      return NextResponse.json({ error: "Phiên đăng nhập không hợp lệ" }, { status: 401 });
+    }
+    const me = (await meRes.json()) as { role?: string };
+    if (me.role !== "ADMIN" && me.role !== "MANAGER") {
+      return NextResponse.json({ error: "Bạn không có quyền sử dụng Trợ lý AI" }, { status: 403 });
+    }
+  } catch {
+    return NextResponse.json({ error: "Không thể xác thực quyền truy cập" }, { status: 502 });
+  }
+
   try {
     const { message, contextData, history } = await req.json();
 
@@ -35,9 +55,8 @@ export async function POST(req: Request) {
     5. Nếu câu hỏi không liên quan đến quán cà phê hoặc không có trong dữ liệu, hãy lịch sự từ chối hoặc trả lời chung chung.
     `;
 
-    let fullPrompt = systemInstruction + "\n\nLịch sử trò chuyện:\n";
+    let fullPrompt = `${systemInstruction}\n\nLịch sử trò chuyện:\n`;
     if (history && history.length > 0) {
-      // 2. Sử dụng interface ChatMessage thay cho 'any'
       history.forEach((msg: ChatMessage) => {
         fullPrompt += `${msg.role === "user" ? "Quản lý" : "Trợ lý AI"}: ${msg.content}\n`;
       });
@@ -50,7 +69,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ reply: responseText });
   } catch (error: unknown) {
-    // 3. Sử dụng 'unknown' thay vì 'any' trong block catch
     console.error("Gemini API Error:", error);
     return NextResponse.json(
       { error: "Có lỗi xảy ra khi kết nối với AI (Kiểm tra lại GEMINI_API_KEY)" },

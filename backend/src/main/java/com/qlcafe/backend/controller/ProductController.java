@@ -18,8 +18,9 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size,
-                                         @RequestParam(required = false) String search) {
-        return ResponseEntity.ok(productService.getAllProducts(page, size, search));
+                                         @RequestParam(required = false) String search,
+                                         @RequestParam(required = false) Integer categoryId) {
+        return ResponseEntity.ok(productService.getAllProducts(page, size, search, categoryId));
     }
     
     @PostMapping

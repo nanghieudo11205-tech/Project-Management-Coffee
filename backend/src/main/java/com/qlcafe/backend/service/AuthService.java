@@ -3,7 +3,9 @@ package com.qlcafe.backend.service;
 import com.qlcafe.backend.dto.AccountResponse;
 import com.qlcafe.backend.dto.AuthRequest;
 import com.qlcafe.backend.dto.AuthResponse;
+import com.qlcafe.backend.dto.ForgotPasswordRequest;
 import com.qlcafe.backend.dto.GoogleAuthRequest;
+import com.qlcafe.backend.dto.ResetPasswordRequest;
 import com.qlcafe.backend.entity.Account;
 import com.qlcafe.backend.entity.Employee;
 import com.qlcafe.backend.exception.BusinessException;
@@ -29,9 +31,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AuthService {
@@ -53,6 +58,14 @@ public class AuthService {
 
     @Value("${app.google.allow-auto-register:false}")
     private boolean allowGoogleAutoRegister;
+
+    @Value("${app.auth.allow-self-register:true}")
+    private boolean allowSelfRegister;
+
+    private final Map<String, ResetCodeEntry> resetCodes = new ConcurrentHashMap<>();
+    private final SecureRandom secureRandom = new SecureRandom();
+
+    private record ResetCodeEntry(String code, Instant expiresAt) {}
 
     public AuthService(
             AuthenticationManager authenticationManager,
@@ -89,14 +102,18 @@ public class AuthService {
 
     @Transactional
     public void register(AuthRequest request) {
+        if (!allowSelfRegister) {
+            throw new AccessDeniedException("Hệ thống hiện tắt tự đăng ký. Vui lòng liên hệ Quản trị viên để cấp tài khoản.");
+        }
         if (request == null || request.getUsername() == null || request.getUsername().trim().isEmpty()) {
             throw new BusinessException("Tên đăng nhập không được để trống");
         }
-        if (request.getPassword() == null || request.getPassword().length() < 6) {
-            throw new BusinessException("Mật khẩu phải có ít nhất 6 ký tự");
-        }
-
         String username = request.getUsername().trim();
+        if (username.length() < 3 || username.length() > 50) {
+            throw new BusinessException("Tên đăng nhập phải từ 3 đến 50 ký tự");
+        }
+        validatePasswordPolicy(request.getPassword());
+
         if (accountRepository.findByUsername(username).isPresent()) {
             throw new ConflictException("Tên đăng nhập đã tồn tại");
         }
@@ -107,6 +124,46 @@ public class AuthService {
         account.setRole("EMPLOYEE");
         account.setIsActive(true);
         accountRepository.save(account);
+    }
+
+    public String requestPasswordReset(ForgotPasswordRequest request) {
+        String identifier = request.getIdentifier().trim();
+        Account account = accountRepository.findByUsername(identifier)
+                .or(() -> accountRepository.findByEmailIgnoreCase(identifier))
+                .orElse(null);
+
+        if (account != null && Boolean.TRUE.equals(account.getIsActive())) {
+            String code = String.format("%06d", secureRandom.nextInt(1_000_000));
+            resetCodes.put(account.getUsername(), new ResetCodeEntry(code, Instant.now().plusSeconds(900)));
+        }
+        return "Nếu tài khoản tồn tại và đang hoạt động, yêu cầu khôi phục mật khẩu đã được ghi nhận. Vui lòng liên hệ Quản trị viên để được hỗ trợ cấp lại mật khẩu.";
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        String username = request.getUsername().trim();
+        ResetCodeEntry entry = resetCodes.get(username);
+        if (entry == null || entry.expiresAt().isBefore(Instant.now()) || !entry.code().equals(request.getResetCode().trim())) {
+            throw new BusinessException("Mã xác nhận không hợp lệ hoặc đã hết hạn");
+        }
+        validatePasswordPolicy(request.getNewPassword());
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản: " + username));
+        ensureAccountIsActive(account);
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        accountRepository.save(account);
+        resetCodes.remove(username);
+    }
+
+    private void validatePasswordPolicy(String password) {
+        if (password == null || password.length() < 8) {
+            throw new BusinessException("Mật khẩu phải có ít nhất 8 ký tự");
+        }
+        boolean hasLetter = password.chars().anyMatch(Character::isLetter);
+        boolean hasDigit = password.chars().anyMatch(Character::isDigit);
+        if (!hasLetter || !hasDigit) {
+            throw new BusinessException("Mật khẩu phải chứa ít nhất 1 chữ cái và 1 chữ số");
+        }
     }
 
     public void logout(String token) {
