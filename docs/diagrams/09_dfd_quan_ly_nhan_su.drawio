@@ -1,56 +1,54 @@
-<mxfile host="app.diagrams.net" type="device">
-  <diagram id="dfd-employees" name="DFD Quản lý Nhân sự">
+<mxfile host="app.diagrams.net" modified="2026-11-28T09:00:00.000Z" agent="Antigravity" version="24.0.0" type="device">
+  <diagram id="dfd_09" name="DFD Muc 2 - Quan Ly Nhan Su">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <mxCell id="title" value="Chức năng phân hệ quản lý nhân sự" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="150" y="30" width="500" height="30" as="geometry" />
+        <mxCell id="title" value="SƠ ĐỒ DFD MỨC 2 - PHÂN HỆ QUẢN LÝ NHÂN SỰ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="300" y="30" width="560" height="40" as="geometry" />
         </mxCell>
-
-        <!-- Tác nhân ngoài -->
-        <mxCell id="manager" value="Ban quản lý&#xa;(Admin)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=14;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="50" y="270" width="120" height="50" as="geometry" />
+        <mxCell id="actor_admin" value="Ban quản trị&#xa;(Quản lý)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fontSize=13;fillColor=#E2E8F0;strokeColor=#475569;strokeWidth=1.5;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="80" y="260" width="140" height="80" as="geometry" />
         </mxCell>
-
-        <!-- Tiến trình (Hình tròn) -->
-        <mxCell id="p61" value="6.1. Quản lý&#xa;hồ sơ nhân sự" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="340" y="110" width="105" height="105" as="geometry" />
+        <mxCell id="p4_1" value="4.1. Tiếp nhận &amp;&#xa;Hồ sơ nhân viên" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#EFF6FF;strokeColor=#1E40AF;strokeWidth=1.5;fontSize=13;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400" y="140" width="130" height="130" as="geometry" />
         </mxCell>
-
-        <mxCell id="p62" value="6.2. Cấp &amp; phân&#xa;quyền tài khoản" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="340" y="260" width="105" height="105" as="geometry" />
+        <mxCell id="p4_2" value="4.2. Quản lý&#xa;Tài khoản &amp; Quyền" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#EFF6FF;strokeColor=#1E40AF;strokeWidth=1.5;fontSize=13;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400" y="340" width="130" height="130" as="geometry" />
         </mxCell>
-
-        <mxCell id="p63" value="6.3. Khóa / mở&#xa;khóa tài khoản" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="340" y="420" width="105" height="105" as="geometry" />
+        <mxCell id="p4_3" value="4.3. Theo dõi&#xa;Ca trực &amp; Lịch" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#EFF6FF;strokeColor=#1E40AF;strokeWidth=1.5;fontSize=13;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400" y="530" width="130" height="130" as="geometry" />
         </mxCell>
-
-        <!-- Kho dữ liệu (2 đường song song) -->
-        <mxCell id="d_emp" value="Hồ sơ nhân viên" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="590" y="160" width="150" height="40" as="geometry" />
+        <mxCell id="d_emp" value="Hồ sơ nhân viên&#xa;(Employee)" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="780" y="180" width="180" height="50" as="geometry" />
         </mxCell>
-
-        <mxCell id="d_acc" value="Tài khoản hệ thống" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="590" y="340" width="150" height="40" as="geometry" />
+        <mxCell id="d_acc" value="Tài khoản &amp; Phân quyền&#xa;(Account)" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="780" y="380" width="180" height="50" as="geometry" />
         </mxCell>
-
-        <!-- Edges -->
-        <mxCell id="e1" value="Họ tên, SĐT, CCCD, lương" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" edge="1" parent="1" source="manager" target="p61">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="110" y="163" /></Array></mxGeometry>
+        <mxCell id="d_shift" value="Lịch phân ca trực&#xa;(WorkShift)" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="780" y="570" width="180" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="e2" value="Lưu hồ sơ" style="edgeStyle=straight;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" edge="1" parent="1" source="p61" target="d_emp"><mxGeometry relative="1" as="geometry" /></mxCell>
-
-        <mxCell id="e3" value="Username, password, role" style="edgeStyle=straight;rounded=0;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" edge="1" parent="1" source="manager" target="p62"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e4" value="Lưu Account BCrypt" style="edgeStyle=straight;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" edge="1" parent="1" source="p62" target="d_acc"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e5" value="Gán account_id" style="edgeStyle=straight;rounded=0;html=1;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0.2;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" edge="1" parent="1" source="p62" target="d_emp"><mxGeometry relative="1" as="geometry" /></mxCell>
-
-        <mxCell id="e6" value="Khóa / Kích hoạt tài khoản" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" edge="1" parent="1" source="manager" target="p63">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="110" y="473" /></Array></mxGeometry>
+        <mxCell id="f1" value="Thêm/sửa thông tin nhân sự" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;strokeColor=#1E293B;strokeWidth=1.5;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="actor_admin" target="p4_1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e7" value="Cập nhật isActive" style="edgeStyle=straight;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.3;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;" edge="1" parent="1" source="p63" target="d_acc"><mxGeometry relative="1" as="geometry" /></mxCell>
-
+        <mxCell id="f2" value="Cấp/khóa tài khoản, quyền" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#1E293B;strokeWidth=1.5;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="actor_admin" target="p4_2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" value="Phân công ca trực" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.75;entryX=0;entryY=0.5;strokeColor=#1E293B;strokeWidth=1.5;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="actor_admin" target="p4_3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" value="Lưu / Tra cứu hồ sơ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#1E293B;strokeWidth=1.5;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="p4_1" target="d_emp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f5" value="Lưu thông tin đăng nhập" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#1E293B;strokeWidth=1.5;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="p4_2" target="d_acc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f6" value="Ghi nhận lịch ca" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#1E293B;strokeWidth=1.5;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="p4_3" target="d_shift">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f7" value="Liên kết ID nhân viên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#64748B;strokeWidth=1.2;strokeDashArray=3 3;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="p4_1" target="p4_2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

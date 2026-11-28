@@ -1,28 +1,35 @@
 package com.qlcafe.backend.entity;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "OrderDetail")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderDetail {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonBackReference
     private Order order;
-    
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-    
+
     @Column(nullable = false)
     private Integer quantity;
-    
-    @Column(nullable = false)
-    private Double price;
+
+    @Column(nullable = false, precision = 18, scale = 2)
+    private BigDecimal price;
 
     @Column(length = 255)
     private String note;

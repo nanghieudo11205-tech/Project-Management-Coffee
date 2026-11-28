@@ -1,41 +1,56 @@
 package com.qlcafe.backend.controller;
+
 import com.qlcafe.backend.entity.CafeTable;
 import com.qlcafe.backend.service.CafeTableService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/tables")
 public class CafeTableController {
     private final CafeTableService cafeTableService;
+
     public CafeTableController(CafeTableService cafeTableService) {
         this.cafeTableService = cafeTableService;
     }
+
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
-    public ResponseEntity<?> getAll() {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
+    public ResponseEntity<List<CafeTable>> getAll() {
         return ResponseEntity.ok(cafeTableService.getAllTables());
     }
-    @PostMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
-    public ResponseEntity<?> create(@RequestBody CafeTable table) {
-        return ResponseEntity.ok(cafeTableService.saveTable(table));
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
+    public ResponseEntity<CafeTable> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(cafeTableService.getTableById(id));
     }
+
+    @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
+    public ResponseEntity<CafeTable> create(@RequestBody CafeTable table) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(cafeTableService.saveTable(table));
+    }
+
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
-    public ResponseEntity<?> updateStatus(@PathVariable Integer id, @RequestParam String status) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
+    public ResponseEntity<CafeTable> updateStatus(@PathVariable Integer id, @RequestParam String status) {
         return ResponseEntity.ok(cafeTableService.updateTableStatus(id, status));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
-    public ResponseEntity<?> updateTable(@PathVariable Integer id, @RequestBody CafeTable tableDetails) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
+    public ResponseEntity<CafeTable> updateTable(@PathVariable Integer id, @RequestBody CafeTable tableDetails) {
         return ResponseEntity.ok(cafeTableService.updateTable(id, tableDetails.getName()));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
-    public ResponseEntity<?> deleteTable(@PathVariable Integer id) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
+    public ResponseEntity<CafeTable> deleteTable(@PathVariable Integer id) {
         return ResponseEntity.ok(cafeTableService.deleteTable(id));
     }
 }

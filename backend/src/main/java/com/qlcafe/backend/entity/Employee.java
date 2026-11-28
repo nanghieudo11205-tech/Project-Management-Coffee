@@ -2,6 +2,8 @@ package com.qlcafe.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -32,10 +34,11 @@ public class Employee {
     @Column(name = "hire_date")
     private LocalDate hireDate;
 
-    private Double salary;
+    @Column(precision = 18, scale = 2)
+    private BigDecimal salary;
 
     @OneToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
     @Column(name = "is_active")

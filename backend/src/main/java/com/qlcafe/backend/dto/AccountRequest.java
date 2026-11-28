@@ -6,5 +6,8 @@ import lombok.Data;
 public class AccountRequest {
     private String username;
     private String password;
+    private String email;
+    private String googleId;
     private String role;
+    private Boolean isActive;
 }

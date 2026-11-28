@@ -20,7 +20,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Auto hash password if inserted as plain text in SQL script
         accountRepository.findByUsername("admin").ifPresent(admin -> {
-            if (!admin.getPassword().startsWith("$2a$")) {
+            if (admin.getPassword() != null && !admin.getPassword().startsWith("$2a$")) {
                 admin.setPassword(passwordEncoder.encode(admin.getPassword()));
                 accountRepository.save(admin);
             }

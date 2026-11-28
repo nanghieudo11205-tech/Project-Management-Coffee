@@ -33,7 +33,7 @@
 - **Dashboard Thống kê**: Tích hợp Chart.js hiển thị biểu đồ doanh thu trực quan, thẻ thông tin tổng quan sinh động.
 - **Quản lý Sản phẩm**: Liệt kê dạng bảng hiện đại, hỗ trợ popup Upload ảnh động, thao tác thêm/sửa/xoá (Soft delete).
 - **Quản lý Bàn & Đặt đồ (POS)**: Hệ thống tối ưu hóa luồng gọi món (chia màn hình 2 cột: menu và giỏ hàng). Sơ đồ bàn hiển thị màu sắc thông minh (Hiệu ứng nhịp đập Pulse đối với bàn đang có khách).
-- **Trợ lý ảo AI**: Tích hợp sức mạnh của LLM (Gemini 3.1 Pro). Trợ lý AI có khả năng "đọc" dữ liệu Database (doanh thu, đơn hàng, mặt hàng) để chủ động phân tích và đưa ra lời khuyên kinh doanh sâu sắc dựa trên số liệu thực tế.
+- **Trợ lý ảo AI**: Tích hợp sức mạnh của LLM (Gemini 2.5 Pro). Trợ lý AI có khả năng "đọc" dữ liệu Database (doanh thu, đơn hàng, mặt hàng) để chủ động phân tích và đưa ra lời khuyên kinh doanh sâu sắc dựa trên số liệu thực tế.
 
 ## 🔑 Hướng dẫn chạy dự án
 

@@ -1,260 +1,60 @@
-# Sơ Đồ Luồng Dữ Liệu (DFD) Mức Dưới Đỉnh Cho Các Chức Năng Của Hệ Thống Web QLCafe
+# Đặc Tả Các Sơ Đồ Luồng Dữ Liệu (DFD) Mức Dưới Đỉnh (Mức 2)
 
-> **Quy chuẩn môn học:** Phân tích & Thiết kế Hệ thống Thông tin (PTTKHTTT).  
-> **Loại sơ đồ:** Data Flow Diagram (DFD) Mức 2 (Mức dưới đỉnh / Phân rã chức năng).  
-> **Quy ước chuẩn DFD (DeMarco / Yourdon):**
-> - **Hình chữ nhật:** Thực thể ngoài (External Entity).
-> - **Hình tròn:** Tiến trình xử lý (Process x.1, x.2...).
-> - **2 đường gạch song song (trên và dưới, hở 2 đầu):** Kho dữ liệu (Data Store).
-> - **Mũi tên có nhãn:** Luồng dữ liệu (Data Flow).
+Tài liệu này tổng hợp cấu trúc, tiến trình (Process), luồng dữ liệu (Data Flow) và kho dữ liệu (Data Store) cho toàn bộ các phân hệ chức năng của Hệ thống Quản Lý Quán Cà Phê.
 
----
-
-## 1. Chức Năng: Phân Hệ Thống Kê Và Báo Cáo (Khớp 100% ảnh mẫu)
-
-Dán vào **[Mermaid Live Editor](https://mermaid.live/edit)** để xuất ảnh:
-
-```mermaid
----
-title: Chức năng phân hệ thống kê và báo cáo
----
-flowchart TD
-    %% Tác nhân ngoài
-    Admin["Ban quản trị"]
-
-    %% Tiến trình xử lý (Hình tròn)
-    P5_1(("5.1. Thống kê<br/>kinh doanh"))
-    P5_2(("5.2. Báo cáo<br/>định kỳ"))
-
-    %% Kho dữ liệu (2 đường kẻ song song chuẩn DFD)
-    D1["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Hóa đơn Doanh thu</div>"]
-    D2["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Danh sách phòng / Bàn</div>"]
-    D3["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Danh sách dịch vụ / Món</div>"]
-    D4["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Hồ sơ nhân viên</div>"]
-    D5["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Báo cáo thống kê</div>"]
-
-    %% Luồng dữ liệu cho 5.1
-    Admin -->|Yêu cầu thống kê kinh doanh| P5_1
-    P5_1 -->|Kết quả thống kê kinh doanh| Admin
-    P5_1 --> D1
-    P5_1 --> D2
-    P5_1 --> D3
-    D4 --> P5_1
-
-    %% Luồng liên kết giữa 5.1 và 5.2
-    P5_1 -->|Dữ liệu thống kê tổng hợp| P5_2
-
-    %% Luồng dữ liệu cho 5.2
-    Admin -->|Yêu cầu báo cáo định kỳ| P5_2
-    P5_2 -->|Báo cáo định kỳ| Admin
-    P5_2 --> D5
-
-    %% Style đen trắng học thuật: Ẩn viền bao ngoài kho dữ liệu để chỉ còn 2 vạch song song
-    classDef entity fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef process fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef datastore fill:none,stroke:none;
-
-    class Admin entity;
-    class P5_1,P5_2 process;
-    class D1,D2,D3,D4,D5 datastore;
-```
+Quy ước ký hiệu theo chuẩn Gane & Sarson / DeMarco:
+- **Tiến trình (Process):** Hình tròn hoặc elip, mang số hiệu phân cấp (ví dụ: `1.1`, `5.1`).
+- **Tác nhân ngoài (External Entity):** Hình chữ nhật (ví dụ: `Ban quản trị`, `Khách hàng`, `Nhân viên thu ngân`).
+- **Kho dữ liệu (Data Store):** Hình 2 đường thẳng song song (kèm tên kho ở giữa, ví dụ: `Hóa đơn Doanh thu`, `Danh sách phòng / bàn`, `Danh sách dịch vụ / món`).
+- **Luồng dữ liệu (Data Flow):** Mũi tên có gắn nhãn mô tả thông tin luân chuyển.
 
 ---
 
-## 2. Chức Năng: Phân Hệ Bán Hàng Tại Quầy (POS) & Xử Lý Đơn Hàng
-
-```mermaid
----
-title: Chức năng phân hệ bán hàng tại quầy và xử lý đơn hàng (POS)
----
-flowchart TD
-    %% Tác nhân
-    Staff["Nhân viên thu ngân / Bán hàng"]
-    Customer["Khách hàng"]
-
-    %% Tiến trình
-    P4_1(("4.1. Tiếp nhận &<br/>chọn món gọi"))
-    P4_2(("4.2. Xử lý &<br/>chuyển bàn"))
-    P4_3(("4.3. Thanh toán &<br/>in hóa đơn"))
-
-    %% Kho dữ liệu (2 đường song song)
-    D_Product["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Thực đơn món</div>"]
-    D_Table["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Sơ đồ bàn</div>"]
-    D_Order["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Hóa đơn bán hàng</div>"]
-    D_Detail["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Chi tiết hóa đơn</div>"]
-
-    %% Luồng dữ liệu 4.1
-    Customer -->|Yêu cầu gọi món / Đặt chỗ| Staff
-    Staff -->|Chọn bàn & danh sách món| P4_1
-    D_Product -->|Thông tin giá & món còn hàng| P4_1
-    P4_1 -->|Ghi nhận đơn tạm thời PENDING| D_Order
-    P4_1 -->|Lưu danh sách món gọi| D_Detail
-    P4_1 -->|Đổi trạng thái bàn sang OCCUPIED| D_Table
-
-    %% Luồng dữ liệu 4.2 (Chuyển bàn)
-    Staff -->|Yêu cầu đổi bàn| P4_2
-    D_Table <-->|Kiểm tra & hoán đổi trạng thái bàn| P4_2
-    P4_2 -->|Cập nhật bàn mới vào đơn| D_Order
-
-    %% Luồng dữ liệu 4.3 (Thanh toán)
-    Customer -->|Tiền mặt / Chuyển khoản QR| Staff
-    Staff -->|Xác nhận thanh toán| P4_3
-    D_Order -->|Đọc tổng tiền đơn hàng| P4_3
-    P4_3 -->|Cập nhật trạng thái PAID| D_Order
-    P4_3 -->|Giải phóng bàn về AVAILABLE| D_Table
-    P4_3 -->|In hóa đơn thanh toán| Staff
-    Staff -->|Giao hóa đơn & đồ uống| Customer
-
-    %% Style đen trắng
-    classDef entity fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef process fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef datastore fill:none,stroke:none;
-
-    class Staff,Customer entity;
-    class P4_1,P4_2,P4_3 process;
-    class D_Product,D_Table,D_Order,D_Detail datastore;
-```
+## 1. Phân Hệ Thống Kê & Báo Cáo (DFD 5.0)
+- **File sơ đồ:** `docs/diagrams/05_dfd_thong_ke_bao_cao.drawio`
+- **Tiến trình con:**
+  - `5.1. Thống kê kinh doanh`: Nhận yêu cầu thống kê từ Ban quản trị, truy vấn từ các kho `Hóa đơn Doanh thu`, `Danh sách phòng / bàn`, `Danh sách dịch vụ / món`, `Hồ sơ nhân viên`. Trả về kết quả thống kê doanh thu, tỷ trọng món, hiệu suất ca. Đồng thời chuyển tiếp `Dữ liệu thống kê tổng hợp` sang tiến trình 5.2.
+  - `5.2. Báo cáo định kỳ`: Tiếp nhận yêu cầu báo cáo định kỳ theo tuần/tháng/quý từ Ban quản trị, kết hợp với dữ liệu tổng hợp để xuất báo cáo định kỳ lưu trữ vào kho `Báo cáo thống kê` và gửi kết quả báo cáo về Ban quản trị.
 
 ---
 
-## 3. Chức Năng: Phân Hệ Quản Lý Sơ Đồ Bàn
-
-```mermaid
----
-title: Chức năng phân hệ quản lý sơ đồ bàn
----
-flowchart TD
-    %% Tác nhân
-    Manager["Quản lý quán"]
-    Staff["Nhân viên phục vụ"]
-
-    %% Tiến trình
-    P3_1(("3.1. Thêm mới bàn"))
-    P3_2(("3.2. Chỉnh sửa &<br/>xóa bàn"))
-    P3_3(("3.3. Cập nhật<br/>trạng thái bàn"))
-
-    %% Kho dữ liệu (2 đường song song)
-    D_Table["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Sơ đồ bàn</div>"]
-    D_Order["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Hóa đơn bán hàng</div>"]
-
-    %% Luồng 3.1
-    Manager -->|Nhập tên bàn mới| P3_1
-    P3_1 -->|Lưu bàn mới AVAILABLE| D_Table
-    P3_1 -->|Báo tạo bàn thành công| Manager
-
-    %% Luồng 3.2
-    Manager -->|Yêu cầu sửa tên / Xóa bàn| P3_2
-    D_Table -->|Đọc thông tin & trạng thái bàn| P3_2
-    D_Order -->|Kiểm tra hóa đơn PENDING| P3_2
-    P3_2 -->|Cập nhật tên mới hoặc gán DELETED| D_Table
-    P3_2 -->|Báo kết quả sửa/xóa bàn| Manager
-
-    %% Luồng 3.3
-    Staff -->|Báo khách vào / Dọn bàn| P3_3
-    P3_3 <-->|Cập nhật AVAILABLE hoặc OCCUPIED| D_Table
-    P3_3 -->|Hiển thị sơ đồ bàn trực quan| Staff
-
-    %% Style
-    classDef entity fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef process fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef datastore fill:none,stroke:none;
-
-    class Manager,Staff entity;
-    class P3_1,P3_2,P3_3 process;
-    class D_Table,D_Order datastore;
-```
+## 2. Phân Hệ Bán Hàng & Gọi Món POS (DFD 1.0)
+- **File sơ đồ:** `docs/diagrams/06_dfd_ban_hang_pos.drawio`
+- **Tiến trình con:**
+  - `1.1. Tiếp nhận gọi món`: Thu ngân/phục vụ chọn bàn và món, kiểm tra trạng thái bàn và giá món từ kho `Danh sách bàn` và `Danh mục thực đơn`.
+  - `1.2. Xử lý & Lưu đơn hàng`: Ghi nhận đơn hàng vào kho `Đơn hàng (Orders)` và chi tiết từng món vào kho `Chi tiết đơn hàng (OrderDetail)`, đồng thời cập nhật trạng thái bàn sang "Có khách".
+  - `1.3. Thanh toán & In hóa đơn`: Thu ngân xác nhận thu tiền, ghi nhận thời gian kết thúc, lưu thông tin hóa đơn vào kho `Hóa đơn doanh thu` và in hóa đơn cho khách hàng.
 
 ---
 
-## 4. Chức Năng: Phân Hệ Quản Lý Menu & Sản Phẩm
-
-```mermaid
----
-title: Chức năng phân hệ quản lý thực đơn và sản phẩm
----
-flowchart TD
-    %% Tác nhân
-    Manager["Quản lý quán"]
-
-    %% Tiến trình
-    P2_1(("2.1. Quản lý<br/>danh mục món"))
-    P2_2(("2.2. Thêm & cập nhật<br/>món uống"))
-    P2_3(("2.3. Tải lên &<br/>lưu trữ ảnh món"))
-
-    %% Kho dữ liệu (2 đường song song)
-    D_Category["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Danh mục sản phẩm</div>"]
-    D_Product["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Thực đơn món</div>"]
-    D_Images["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Thư mục hình ảnh</div>"]
-
-    %% Luồng 2.1
-    Manager -->|Thêm / Sửa danh mục| P2_1
-    P2_1 <-->|Đọc & Lưu danh mục| D_Category
-    P2_1 -->|Kết quả danh mục| Manager
-
-    %% Luồng 2.2
-    Manager -->|Tên món, giá, danh mục| P2_2
-    D_Category -->|Danh mục hợp lệ| P2_2
-    P2_2 -->|Lưu thông tin sản phẩm| D_Product
-    P2_2 -->|Báo lưu món thành công| Manager
-
-    %% Luồng 2.3
-    Manager -->|Tải tệp ảnh món (.jpg/.png)| P2_3
-    P2_3 -->|Lưu trữ tệp vật lý| D_Images
-    P2_3 -->|Trả về đường dẫn URL ảnh| P2_2
-
-    %% Style
-    classDef entity fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef process fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef datastore fill:none,stroke:none;
-
-    class Manager entity;
-    class P2_1,P2_2,P2_3 process;
-    class D_Category,D_Product,D_Images datastore;
-```
+## 3. Phân Hệ Quản Lý Bàn Phục Vụ (DFD 2.0)
+- **File sơ đồ:** `docs/diagrams/07_dfd_quan_ly_ban.drawio`
+- **Tiến trình con:**
+  - `2.1. Quản lý danh mục bàn`: Ban quản trị thêm/sửa thông tin bàn, sức chứa, số hiệu bàn.
+  - `2.2. Điều phối & Chuyển/Ghép bàn`: Nhân viên thực hiện thao tác chuyển khách từ bàn A sang bàn B hoặc ghép nhiều bàn cùng đoàn khách.
+  - `2.3. Cập nhật trạng thái bàn`: Hệ thống tự động đồng bộ trạng thái bàn (0: Trống, 1: Có khách) theo diễn biến phục vụ.
 
 ---
 
-## 5. Chức Năng: Phân Hệ Quản Lý Nhân Sự
+## 4. Phân Hệ Quản Lý Thực Đơn & Đơn Giá (DFD 3.0)
+- **File sơ đồ:** `docs/diagrams/08_dfd_thuc_don_mon.drawio`
+- **Tiến trình con:**
+  - `3.1. Quản lý phân loại danh mục`: Quản lý danh mục nhóm đồ uống (Cà phê, Trà hoa quả, Đá xay, Bánh ngọt,...).
+  - `3.2. Quản lý món & Giá bán`: Thêm sản phẩm mới, cập nhật hình ảnh, mô tả, định lượng và giá niêm yết vào kho `Danh mục món (Product)`.
 
-```mermaid
 ---
-title: Chức năng phân hệ quản lý nhân sự
+
+## 5. Phân Hệ Quản Lý Nhân Sự (DFD 4.0)
+- **File sơ đồ:** `docs/diagrams/09_dfd_quan_ly_nhan_su.drawio`
+- **Tiến trình con:**
+  - `4.1. Tiếp nhận & Hồ sơ nhân sự`: Cập nhật thông tin nhân viên, chức vụ, mức lương cơ bản vào kho `Hồ sơ nhân viên (Employee)`.
+  - `4.2. Quản lý tài khoản & Phân quyền`: Khởi tạo tài khoản đăng nhập cho nhân viên mới vào kho `Tài khoản (Account)`, gán quyền Admin hoặc Staff.
+  - `4.3. Theo dõi ca trực & Lịch`: Phân chia ca làm việc và ghi nhận thời gian làm.
+
 ---
-flowchart TD
-    %% Tác nhân
-    Manager["Ban quản lý (Admin)"]
 
-    %% Tiến trình
-    P6_1(("6.1. Quản lý<br/>hồ sơ nhân sự"))
-    P6_2(("6.2. Cấp & phân quyền<br/>tài khoản"))
-    P6_3(("6.3. Khóa / mở khóa<br/>tài khoản"))
-
-    %% Kho dữ liệu (2 đường song song)
-    D_Emp["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Hồ sơ nhân viên</div>"]
-    D_Acc["<div style='border-top:2px solid black; border-bottom:2px solid black; padding:4px 14px;'>Tài khoản hệ thống</div>"]
-
-    %% Luồng 6.1
-    Manager -->|Họ tên, SĐT, CCCD, chức vụ, lương| P6_1
-    P6_1 <-->|Đọc & ghi hồ sơ nhân viên| D_Emp
-    P6_1 -->|Báo cập nhật hồ sơ thành công| Manager
-
-    %% Luồng 6.2
-    Manager -->|Tên đăng nhập, mật khẩu, vai trò| P6_2
-    P6_2 -->|Kiểm tra trùng lặp & lưu Account| D_Acc
-    P6_2 -->|Liên kết Account ID vào Nhân viên| D_Emp
-    P6_2 -->|Báo tạo tài khoản thành công| Manager
-
-    %% Luồng 6.3
-    Manager -->|Yêu cầu khóa / kích hoạt| P6_3
-    P6_3 <-->|Cập nhật isActive trong Account & Employee| D_Acc
-    P6_3 -->|Thông báo trạng thái mới| Manager
-
-    %% Style
-    classDef entity fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef process fill:#ffffff,stroke:#000000,stroke-width:1.5px;
-    classDef datastore fill:none,stroke:none;
-
-    class Manager entity;
-    class P6_1,P6_2,P6_3 process;
-    class D_Emp,D_Acc datastore;
-```
+## 6. Phân Hệ Xác Thực & Phân Quyền (DFD 0.0)
+- **File sơ đồ:** `docs/diagrams/10_dfd_xac_thuc_dang_nhap.drawio`
+- **Tiến trình con:**
+  - `0.1. Kiểm tra & Xác thực đăng nhập`: Tiếp nhận tên đăng nhập và mật khẩu, kiểm tra mã băm bảo mật trong kho `Account`.
+  - `0.2. Cấp quyền & Phiên làm việc`: Xác định Role (Quản trị viên hoặc Nhân viên), cấp Token/Session làm việc tương ứng và điều hướng giao diện phù hợp.
