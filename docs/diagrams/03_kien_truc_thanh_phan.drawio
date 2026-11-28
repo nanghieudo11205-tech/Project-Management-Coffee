@@ -1,0 +1,120 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="component-diagram" name="Kiến trúc thành phần">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="850" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="BIỂU ĐỒ KIẾN TRÚC THÀNH PHẦN (COMPONENT DIAGRAM - 3 TẦNG)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="750" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- TẦNG 1: PRESENTATION LAYER -->
+        <mxCell id="box_layer1" value="1. Tầng Trình Diễn - Presentation Layer (Frontend Next.js 15 App Router)" style="shape=rect;html=1;verticalAlign=top;fontStyle=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;spacingLeft=10;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="1100" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_pages" value="«component»&#xa;&lt;b&gt;App Router Pages&lt;/b&gt;&#xa;(/login, /dashboard, /tables,&#xa;/orders, /products, /employees)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="80" y="125" width="230" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_state" value="«component»&#xa;&lt;b&gt;State Management&lt;/b&gt;&#xa;(Zustand Client Store &amp;&#xa;TanStack Query v5 Cache)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400" y="125" width="220" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_apiclient" value="«component»&#xa;&lt;b&gt;API Client Service&lt;/b&gt;&#xa;(Axios Client + JWT Interceptor)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="720" y="125" width="220" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_fe1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.3;fontColor=#000000;" edge="1" parent="1" source="comp_pages" target="comp_state"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_fe2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.3;fontColor=#000000;" edge="1" parent="1" source="comp_state" target="comp_apiclient"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- TẦNG 2: BUSINESS LAYER -->
+        <mxCell id="box_layer2" value="2. Tầng Ứng Dụng &amp; Nghiệp Vụ - Business Logic Layer (Backend Spring Boot 3)" style="shape=rect;html=1;verticalAlign=top;fontStyle=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;spacingLeft=10;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="270" width="1100" height="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_security" value="«component»&#xa;&lt;b&gt;Security &amp; JWT Filter&lt;/b&gt;&#xa;(JwtTokenProvider, BCrypt)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="80" y="320" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_controllers" value="«component»&#xa;&lt;b&gt;REST Controllers&lt;/b&gt;&#xa;(Order, Table, Product,&#xa;Employee, Auth, Revenue)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="350" y="320" width="210" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_services" value="«component»&#xa;&lt;b&gt;Service Layer&lt;/b&gt;&#xa;(OrderService, TableService,&#xa;ProductService, AuthService...)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="630" y="320" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_repos" value="«component»&#xa;&lt;b&gt;JPA Repositories&lt;/b&gt;&#xa;(OrderRepo, TableRepo,&#xa;ProductRepo, AccountRepo...)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="910" y="320" width="210" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comp_storage" value="«component»&#xa;&lt;b&gt;FileStorageService&lt;/b&gt;&#xa;(Lưu trữ ảnh tải lên)" style="shape=module;align=center;verticalAlign=middle;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="630" y="430" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_be1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.3;fontColor=#000000;" edge="1" parent="1" source="comp_security" target="comp_controllers"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_be2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.3;fontColor=#000000;" edge="1" parent="1" source="comp_controllers" target="comp_services"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_be3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.3;fontColor=#000000;" edge="1" parent="1" source="comp_services" target="comp_repos"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_be4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.3;fontColor=#000000;" edge="1" parent="1" source="comp_services" target="comp_storage"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- LIÊN KẾT FE -> BE -->
+        <mxCell id="e_fe_be" value="REST API (HTTPS / JSON)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#004C99;strokeWidth=1.5;fontSize=12;fontColor=#000000;" edge="1" parent="1" source="comp_apiclient" target="comp_security">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="830" y="250" />
+              <mxPoint x="180" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- TẦNG 3: PERSISTENCE LAYER -->
+        <mxCell id="box_layer3" value="3. Tầng Dữ Liệu - Data Persistence Layer (Microsoft SQL Server)" style="shape=rect;html=1;verticalAlign=top;fontStyle=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;spacingLeft=10;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="570" width="550" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_tables" value="«database»&#xa;&lt;b&gt;Database Tables&lt;/b&gt;&#xa;(Account, Employee, Product,&#xa;Orders, OrderDetail, CafeTable)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="80" y="615" width="220" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_views" value="«database»&#xa;&lt;b&gt;Views &amp; SPs&lt;/b&gt;&#xa;(vw_DailyRevenue,&#xa;sp_CheckoutOrder)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="360" y="615" width="200" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_jpa_db" value="Hibernate / JDBC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B25900;strokeWidth=1.5;fontSize=12;fontColor=#000000;" edge="1" parent="1" source="comp_repos" target="db_tables">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1015" y="550" />
+              <mxPoint x="190" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- TẦNG 4: EXTERNAL SERVICES -->
+        <mxCell id="box_layer4" value="4. Dịch Vụ Ngoài - External Services" style="shape=rect;html=1;verticalAlign=top;fontStyle=1;align=left;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;spacingLeft=10;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="640" y="570" width="510" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_google" value="«service»&#xa;&lt;b&gt;Google OAuth2&lt;/b&gt;&#xa;(Identity Provider)" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="680" y="615" width="180" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_gemini" value="«service»&#xa;&lt;b&gt;Google Gemini 2.5 Flash&lt;/b&gt;&#xa;(Generative AI Assistant)" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=1.5;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="920" y="615" width="200" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_ai_call" value="API Route: /api/chat" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673a6;strokeWidth=1.5;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="comp_pages" target="ext_gemini">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="20" y="162" />
+              <mxPoint x="20" y="750" />
+              <mxPoint x="1020" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,62 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="dfd-tables" name="DFD Quản lý Sơ đồ bàn">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Chức năng phân hệ quản lý sơ đồ bàn" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="150" y="30" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Tác nhân ngoài -->
+        <mxCell id="manager" value="Quản lý quán" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=14;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="160" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff" value="Nhân viên phục vụ" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=14;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="420" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Tiến trình xử lý (Hình tròn) -->
+        <mxCell id="p31" value="3.1. Thêm mới bàn" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="340" y="110" width="105" height="105" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p32" value="3.2. Sửa tên &amp;&lt;br&gt;xóa bàn (Soft)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="340" y="260" width="105" height="105" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p33" value="3.3. Cập nhật&lt;br&gt;trạng thái bàn" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1.5;fontSize=13;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="340" y="420" width="105" height="105" as="geometry" />
+        </mxCell>
+
+        <!-- Kho dữ liệu (2 đường song song) -->
+        <mxCell id="d_table" value="Sơ đồ bàn" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="590" y="200" width="140" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d_order" value="Hóa đơn bán hàng" style="shape=partialRectangle;top=1;bottom=1;left=0;right=0;fillColor=none;strokeColor=#000000;strokeWidth=1.5;align=center;verticalAlign=middle;whiteSpace=wrap;html=1;fontSize=13;fontFamily=Helvetica;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="590" y="340" width="140" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" value="Nhập tên bàn mới" style="edgeStyle=straight;rounded=0;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="manager" target="p31"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" value="Lưu bàn AVAILABLE" style="edgeStyle=straight;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="p31" target="d_table"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e3" value="Yêu cầu sửa / xóa" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="manager" target="p32">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="110" y="313" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="Đọc thông tin bàn" style="edgeStyle=straight;rounded=0;html=1;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="d_table" target="p32"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="Kiểm tra đơn PENDING" style="edgeStyle=straight;rounded=0;html=1;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="d_order" target="p32"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="Đổi tên / Gán DELETED" style="edgeStyle=straight;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.2;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="p32" target="d_table"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e7" value="Khách vào / dọn bàn" style="edgeStyle=straight;rounded=0;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="staff" target="p33"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" value="Cập nhật AVAILABLE/OCCUPIED" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.2;fontSize=11;fontColor=#000000;" edge="1" parent="1" source="p33" target="d_table">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="500" y="473" /><mxPoint x="500" y="270" /><mxPoint x="660" y="270" /></Array></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
