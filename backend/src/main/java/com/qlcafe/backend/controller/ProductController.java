@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -23,7 +24,7 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> createProduct(@RequestParam("name") String name,
-                                           @RequestParam("price") Double price,
+                                           @RequestParam("price") BigDecimal price,
                                            @RequestParam("categoryId") Integer categoryId,
                                            @RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(productService.saveProduct(name, price, categoryId, file));
@@ -33,7 +34,7 @@ public class ProductController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> updateProduct(@PathVariable Integer id,
                                            @RequestParam("name") String name,
-                                           @RequestParam("price") Double price,
+                                           @RequestParam("price") BigDecimal price,
                                            @RequestParam("categoryId") Integer categoryId,
                                            @RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(productService.updateProduct(id, name, price, categoryId, file));

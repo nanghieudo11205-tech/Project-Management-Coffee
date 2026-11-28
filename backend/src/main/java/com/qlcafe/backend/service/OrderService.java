@@ -14,6 +14,7 @@ import com.qlcafe.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class OrderService {
 
         order = orderRepository.save(order);
 
-        double totalAmount = 0;
+        BigDecimal totalAmount = BigDecimal.ZERO;
         for (OrderDetailRequest detailReq : request.getDetails()) {
             Product product = productRepository.findById(detailReq.getProductId()).orElseThrow();
             OrderDetail detail = new OrderDetail();
@@ -68,7 +69,7 @@ public class OrderService {
             detail.setQuantity(detailReq.getQuantity());
             detail.setPrice(product.getPrice());
             orderDetailRepository.save(detail);
-            totalAmount += product.getPrice() * detailReq.getQuantity();
+            totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(detailReq.getQuantity())));
         }
 
         order.setTotalAmount(totalAmount);
@@ -171,7 +172,7 @@ public class OrderService {
             order.getOrderDetails().clear();
             orderRepository.flush();
 
-            double totalAmount = 0;
+            BigDecimal totalAmount = BigDecimal.ZERO;
             for (OrderDetailRequest detailReq : request.getDetails()) {
                 Product product = productRepository.findById(detailReq.getProductId()).orElseThrow();
                 OrderDetail detail = new OrderDetail();
@@ -180,7 +181,7 @@ public class OrderService {
                 detail.setQuantity(detailReq.getQuantity());
                 detail.setPrice(product.getPrice());
                 order.getOrderDetails().add(detail);
-                totalAmount += product.getPrice() * detailReq.getQuantity();
+                totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(detailReq.getQuantity())));
             }
             order.setTotalAmount(totalAmount);
         }

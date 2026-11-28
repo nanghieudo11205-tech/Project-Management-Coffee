@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
@@ -30,7 +32,7 @@ public class ProductService {
         return productRepository.findByIsAvailableTrue(PageRequest.of(page, size));
     }
 
-    public Product saveProduct(String name, Double price, Integer categoryId, MultipartFile file) {
+    public Product saveProduct(String name, BigDecimal price, Integer categoryId, MultipartFile file) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         Product product = new Product();
@@ -44,7 +46,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product updateProduct(Integer id, String name, Double price, Integer categoryId, MultipartFile file) {
+    public Product updateProduct(Integer id, String name, BigDecimal price, Integer categoryId, MultipartFile file) {
         Product product = productRepository.findById(id).orElseThrow();
         Category category = categoryRepository.findById(categoryId).orElseThrow();
         product.setName(name);
