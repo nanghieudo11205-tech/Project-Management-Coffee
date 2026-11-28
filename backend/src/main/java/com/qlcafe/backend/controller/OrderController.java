@@ -25,37 +25,37 @@ public class OrderController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(request));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> getOrderById(@PathVariable Integer id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<Order> updateOrder(@PathVariable Integer id, @Valid @RequestBody OrderUpdateRequest request) {
         return ResponseEntity.ok(orderService.updateOrder(id, request));
     }
 
     @PostMapping("/{id}/items")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> addItem(@PathVariable Integer id, @Valid @RequestBody OrderDetailRequest request) {
         return ResponseEntity.ok(orderService.addItemToOrder(id, request));
     }
 
     @PutMapping("/{id}/items/{detailId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> updateItem(
             @PathVariable Integer id,
             @PathVariable Integer detailId,
@@ -65,13 +65,13 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}/items/{detailId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> removeItem(@PathVariable Integer id, @PathVariable Integer detailId) {
         return ResponseEntity.ok(orderService.removeItemFromOrder(id, detailId));
     }
 
     @PutMapping("/{id}/transfer-table")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> transferTable(
             @PathVariable Integer id,
             @Valid @RequestBody TransferTableRequest request
@@ -80,7 +80,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/merge")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> mergeOrders(
             @PathVariable Integer id,
             @Valid @RequestBody MergeOrderRequest request
@@ -89,7 +89,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/checkout")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> checkout(
             @PathVariable Integer id,
             @RequestBody(required = false) CheckoutRequest request
@@ -98,20 +98,20 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/cancel")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<Order> cancelOrder(@PathVariable Integer id) {
         return ResponseEntity.ok(orderService.cancelOrder(id));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<MessageResponse> deleteOrder(@PathVariable Integer id) {
         orderService.deleteOrder(id);
         return ResponseEntity.ok(new MessageResponse("Đã xóa đơn hàng #" + id + " thành công"));
     }
 
     @GetMapping("/top-products")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<List<TopProductDTO>> getTopSellingProducts() {
         List<Object[]> rawData = orderDetailRepository.findTopSellingProducts();
         List<TopProductDTO> result = rawData.stream()

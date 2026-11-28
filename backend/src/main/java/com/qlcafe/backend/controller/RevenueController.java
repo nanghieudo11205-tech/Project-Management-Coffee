@@ -20,7 +20,7 @@ public class RevenueController {
     }
 
     @GetMapping("/stats")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<List<RevenueDTO>> getRevenueStats(@RequestParam(defaultValue = "day") String type) {
         List<Object[]> rawData;
 

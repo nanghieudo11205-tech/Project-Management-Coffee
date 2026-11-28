@@ -19,37 +19,37 @@ public class CafeTableController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<List<CafeTable>> getAll() {
         return ResponseEntity.ok(cafeTableService.getAllTables());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<CafeTable> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(cafeTableService.getTableById(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<CafeTable> create(@RequestBody CafeTable table) {
         return ResponseEntity.status(HttpStatus.CREATED).body(cafeTableService.saveTable(table));
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<CafeTable> updateStatus(@PathVariable Integer id, @RequestParam String status) {
         return ResponseEntity.ok(cafeTableService.updateTableStatus(id, status));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<CafeTable> updateTable(@PathVariable Integer id, @RequestBody CafeTable tableDetails) {
         return ResponseEntity.ok(cafeTableService.updateTable(id, tableDetails.getName()));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<CafeTable> deleteTable(@PathVariable Integer id) {
         return ResponseEntity.ok(cafeTableService.deleteTable(id));
     }

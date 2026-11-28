@@ -1,5 +1,6 @@
 package com.qlcafe.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class Account {
     @Column(unique = true, nullable = false, length = 50)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = true, length = 255)
     private String password;
 
@@ -27,4 +29,7 @@ public class Account {
 
     @Column(nullable = false, length = 20)
     private String role;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 }

@@ -47,7 +47,7 @@ class OrderServiceTest {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken("staff1", "pwd")
         );
-        staffAccount = new Account(1, "staff1", "hash", null, null, "STAFF");
+        staffAccount = new Account(1, "staff1", "hash", null, null, "STAFF", true);
         coffee = new Product(10, "Cà phê đen", new BigDecimal("25000.00"), null, null, true);
         tea = new Product(11, "Trà đào", new BigDecimal("45000.00"), null, null, true);
     }

@@ -4,14 +4,21 @@ import com.qlcafe.backend.entity.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.Collections;
 
 public class CustomUserDetails implements UserDetails {
     private final Account account;
+    private final boolean enabled;
 
     public CustomUserDetails(Account account) {
+        this(account, Boolean.TRUE.equals(account.getIsActive()));
+    }
+
+    public CustomUserDetails(Account account, boolean enabled) {
         this.account = account;
+        this.enabled = enabled;
     }
 
     @Override
@@ -36,7 +43,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return enabled;
     }
 
     @Override
@@ -46,7 +53,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     public Account getAccount() {

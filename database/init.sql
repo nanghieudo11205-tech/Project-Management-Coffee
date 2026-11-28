@@ -22,8 +22,9 @@ CREATE TABLE Account (
     password  VARCHAR(255) NULL,       -- Cho phép NULL với tài khoản đăng nhập Google
     email     VARCHAR(100) NULL,
     google_id VARCHAR(100) NULL,
-    role      VARCHAR(20)  NOT NULL,   -- ADMIN, STAFF
-    CONSTRAINT CK_Account_Role CHECK (role IN ('ADMIN', 'STAFF'))
+    role      VARCHAR(20)  NOT NULL,   -- ADMIN, MANAGER, EMPLOYEE, STAFF
+    is_active BIT          NOT NULL DEFAULT 1,
+    CONSTRAINT CK_Account_Role CHECK (role IN ('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF'))
 );
 
 CREATE UNIQUE INDEX UX_Account_Email ON Account(email) WHERE email IS NOT NULL;

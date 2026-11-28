@@ -15,6 +15,7 @@ public class ProductController {
     }
     
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE', 'STAFF')")
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size,
                                          @RequestParam(required = false) String search) {
@@ -22,7 +23,7 @@ public class ProductController {
     }
     
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<?> createProduct(@RequestParam("name") String name,
                                            @RequestParam("price") BigDecimal price,
                                            @RequestParam("categoryId") Integer categoryId,
@@ -31,7 +32,7 @@ public class ProductController {
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<?> updateProduct(@PathVariable Integer id,
                                            @RequestParam("name") String name,
                                            @RequestParam("price") BigDecimal price,
@@ -41,7 +42,7 @@ public class ProductController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok(new MessageResponse("Deleted successfully"));

@@ -9,7 +9,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,6 +56,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiErrorResponse> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
         return buildError(HttpStatus.UNAUTHORIZED, "Tên đăng nhập hoặc mật khẩu không đúng", request.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(AccountStatusException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccountStatus(AccountStatusException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.FORBIDDEN, "Tài khoản đã bị khóa hoặc ngừng hoạt động", request.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.UNAUTHORIZED, "Xác thực thất bại: " + ex.getMessage(), request.getRequestURI(), null);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
