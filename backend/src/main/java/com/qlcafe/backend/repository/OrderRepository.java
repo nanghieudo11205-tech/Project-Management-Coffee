@@ -1,14 +1,26 @@
 package com.qlcafe.backend.repository;
 
 import com.qlcafe.backend.entity.Order;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    boolean existsByCafeTableIdAndStatus(Integer tableId, String status);
+
+    Optional<Order> findByCafeTableIdAndStatus(Integer tableId, String status);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT o FROM Order o WHERE o.id = :id")
+    Optional<Order> findByIdWithLock(@Param("id") Integer id);
 
     // ===== Revenue Statistics Queries =====
 

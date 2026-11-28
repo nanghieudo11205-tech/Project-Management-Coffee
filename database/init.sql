@@ -67,7 +67,7 @@ CREATE TABLE CafeTable (
     id     INT IDENTITY(1,1) PRIMARY KEY,
     name   NVARCHAR(50) NOT NULL,
     status VARCHAR(20)  DEFAULT 'AVAILABLE', -- AVAILABLE (Trống), OCCUPIED (Có khách)
-    CONSTRAINT CK_CafeTable_Status CHECK (status IN ('AVAILABLE', 'OCCUPIED'))
+    CONSTRAINT CK_CafeTable_Status CHECK (status IN ('AVAILABLE', 'OCCUPIED', 'DELETED'))
 );
 
 -- Bảng Hóa đơn (Lưu trữ thông tin tổng quát của một lần gọi món)
